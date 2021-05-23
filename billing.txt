@@ -1,0 +1,29 @@
+Login Signin System:
+	Admin based:
+		Can CRUD everything of every location
+	Employee based:
+		Can CRU everything on its own location
+Inventory:
+	Products:
+		pr_name
+		pr_id(will be the pr_name itself or pr_slug) or QR code ID
+		pr_availability
+		pr_cp_price
+		pr_sp_price
+		pr_location
+		pr_gst
+		total_cp_products
+		total_sp_products
+		ven_name
+		ven_num
+Transactions:
+	pr_name
+	pr_price
+	pr_discount
+	pr_profit
+	pr_tax
+	buyer_name
+	buyer_num
+	date
+	time
+	location
