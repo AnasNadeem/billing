@@ -1,0 +1,56 @@
+Software Design:
+	Main Window:
+		Bill generate:
+			Search and Select Product
+			Qty
+			Add Product
+			Customer name
+			Customer number
+			Generate Bill
+        Bill:
+            Show live edit and add of Product
+            Get downloaded in pdf format
+		Calculate Price and Exchange b/w Customer and Seller:
+			Money Given by Customer
+			Exchange Money To Give From Total Cost in BILL to Customer
+	Signin Window:
+		Admin Window:
+			Inventory(Window):
+				All Products list
+				Add Product:
+					pr_name
+					pr_id(will be the pr_name itself or pr_slug) or QR code ID
+					pr_availability
+					pr_cp_price
+					pr_sp_price
+					pr_location
+					pr_gst
+					total_cp_products
+					total_sp_products
+					ven_name
+					ven_num
+			Transactions(Window):
+				All transaction filter by recent
+			Employees(Window):
+				Existing employee aka user list
+				Add employee aka user (if multi then acq to location)
+			About(Window):
+				About Software etc.
+		Employee Window:
+			Inventory(Window):
+				All Products list (Only on his location)
+				Add Product (Can add only on his location.):
+					pr_name
+					pr_id(will be the pr_name itself or pr_slug) or QR code ID
+					pr_availability
+					pr_cp_price
+					pr_sp_price
+					pr_location(By default same)
+					pr_gst
+					total_cp_products
+					total_sp_products
+					ven_name
+					ven_num
+			Transactions(Window):
+				All transactions (of his location only)
+
