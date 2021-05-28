@@ -20,7 +20,7 @@ Software Design:
 				Add Product:
 					pr_name
 					pr_id(will be the pr_name itself or pr_slug) or QR code ID
-					pr_availability
+					pr_availability(i.e stocks)
 					pr_cp_price
 					pr_sp_price
 					pr_location
@@ -31,7 +31,7 @@ Software Design:
 					ven_num
 			Transactions(Window):
 				All transaction filter by recent
-			Employees(Window):
+			Users aka Employee(Window):
 				Existing employee aka user list
 				Add employee aka user (if multi then acq to location)
 			About(Window):

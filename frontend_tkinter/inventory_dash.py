@@ -1,6 +1,8 @@
 from tkinter import *
 # from tkinter.ttk import *
 from PIL import Image, ImageTk
+from all_prod_list import AllProdDash
+from addprod import AddProdDash
 
 class InventoryDash:
     def __init__(self, window):
@@ -13,28 +15,40 @@ class InventoryDash:
         # self.window.iconbitmap("")
         self.window.resizable(False, False)
 
-        # Login Dashboard Text 
+        # Inventory Dashboard Text 
         self.login_dash_text = Label(window, text='Inventory Dashboard',font=("Roboto Regular", 36), fg=self.main_white_color,bg=self.main_black_color)
         self.login_dash_text.place(x=0,y=0)
 
-        # ADMIN LOGIN BUTTON
+        # All Prod List BUTTON
         self.all_product_image_open = Image.open('images/allprlisttxt.png')
         self.all_product_image_open = self.all_product_image_open.resize((380, 100), Image.ANTIALIAS)
         self.all_product_img = ImageTk.PhotoImage(self.all_product_image_open)
 
-        self.all_product_btn = Button(window, image=self.all_product_img, borderwidth=0,border=0,bg=self.main_black_color)
+        self.all_product_btn = Button(window, image=self.all_product_img,
+                                        cursor='hand2',command=self.all_prod_new_win,
+                                        borderwidth=0,border=0,bg=self.main_black_color)
+
         self.all_product_btn.image = self.all_product_img
         self.all_product_btn.place(x=490, y=180)
 
-        # USER LOGIN BUTTON
+        # Add Prod BUTTON
         self.add_prod_image_open = Image.open('images/addproducttxt.png')
         self.add_prod_image_open = self.add_prod_image_open.resize((380, 100), Image.ANTIALIAS)
         self.add_prod_img = ImageTk.PhotoImage(self.add_prod_image_open)
 
-        self.add_prod_btn = Button(window, image=self.add_prod_img, borderwidth=0,border=0,bg=self.main_black_color)
+        self.add_prod_btn = Button(window, image=self.add_prod_img,
+                                    cursor='hand2',command=self.add_prod_new_win,
+                                    borderwidth=0,border=0,bg=self.main_black_color)
         self.add_prod_btn.image = self.add_prod_img
         self.add_prod_btn.place(x=490, y=340)
 
+    def all_prod_new_win(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = AllProdDash(self.newWindow)
+
+    def add_prod_new_win(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = AddProdDash(self.newWindow)
 
 def run_func():
     window = Tk()
