@@ -1,6 +1,10 @@
 from tkinter import *
 # from tkinter.ttk import *
 from PIL import Image, ImageTk
+from tkinter import messagebox
+import sqlite3
+from admin_dash import AdminDash
+from user_dash import UserDash
 
 class LoginDash:
     def __init__(self, window):
@@ -19,11 +23,14 @@ class LoginDash:
         # self.window.iconbitmap("")
         self.window.resizable(False, False)
 
+        # Defining Variable
+        self.var_user_login = StringVar()
+        self.var_user_pass = StringVar()
         # Login Dashboard Text 
-        self.login_dash_text = Label(window, text='Login Dashboard', 
+        login_dash_text = Label(window, text='Login Dashboard', 
                                     font=("Roboto Regular", 36),
                                     fg=self.main_white_color, bg=self.main_black_color)
-        self.login_dash_text.place(x=0,y=0)
+        login_dash_text.place(x=0,y=0)
 
 
         # White Box
@@ -35,30 +42,28 @@ class LoginDash:
         # self.box_image_btn.image = self.box_image_img
         # self.box_image_btn.place(x=443, y=120)
 
-        # ========================================================================
         # ============================Username====================================
-        # ========================================================================
-
-        self.username_label = Label(self.window, text="Username ", bg="white", fg="#4f4e4d",
+        username_label = Label(self.window, text="Username ", bg="white", fg="#4f4e4d",
                                     font=("yu gothic ui", 13, "bold"))
-        self.username_label.place(x=495, y=220)
+        username_label.place(x=495, y=220)
 
-        self.username_entry = Entry(self.window, highlightthickness=0, relief=FLAT, bg="white", fg="#6b6a69",
+        self.username_entry = Entry(self.window, highlightthickness=0,
+                                    textvariable=self.var_user_login,
+                                    relief=FLAT, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12))
-        self.username_entry.place(x=530, y=255, width=380)  # trebuchet ms
+        self.username_entry.place(x=530, y=255, width=380)
 
-        # ========================================================================
         # ============================Password====================================
-        # ========================================================================
-
-        self.password_label = Label(self.window, text="Password ",
+        password_label = Label(self.window, text="Password ",
                                     bg="white", fg="#4f4e4d",
                                     font=("yu gothic ui", 13, "bold"))
-        self.password_label.place(x=495, y=335)
+        password_label.place(x=495, y=335)
 
-        self.password_entry = Entry(self.window, highlightthickness=0, relief=FLAT, bg="white", fg="#6b6a69",
+        self.password_entry = Entry(self.window, highlightthickness=0, 
+                                    textvariable=self.var_user_pass,
+                                    relief=FLAT, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12), show="*")
-        self.password_entry.place(x=530, y=370, width=355)  # trebuchet ms
+        self.password_entry.place(x=530, y=370, width=355)
 
         self.show_image = ImageTk.PhotoImage \
             (file='images\\show.png')
@@ -68,30 +73,22 @@ class LoginDash:
 
         self.show_button = Button(self.window, image=self.show_image, relief=FLAT,
                                   activebackground="white", command=self.show
-                                  , borderwidth=0, background="white", cursor="hand2")
+                                  ,borderwidth=0, background="white", cursor="hand2")
         self.show_button.place(x=890, y=377)
 
-        # ========================================================================
         # ============================Login button================================
-        # ========================================================================
-
-        self.login = ImageTk.PhotoImage \
-            (file='images\\login.png')
-
-        self.login_button = Button(self.window, image=self.login,
-                                   font=("yu gothic ui", 13, "bold"), relief=FLAT, activebackground="white"
-                                   , borderwidth=0, background="white", cursor="hand2")
+        self.login_button = Button(self.window, text='Login',
+                                cursor='hand2',fg=self.main_white_color,
+                                command=self.login_func,                   
+                                bg=self.main_black_color, font=('goudy old style', 14),width=16)
         self.login_button.place(x=640, y=450)
 
-        # ========================================================================
         # ============================Forgot password=============================
-        # ========================================================================
-
-        self.forgot_button = Button(self.window, text="Forgot Password?",
-                                    font=("yu gothic ui", 13, "bold underline"), fg="red", relief=FLAT,
-                                    activebackground="white"
-                                    , borderwidth=0, background="white", cursor="hand2")
-        self.forgot_button.place(x=767, y=410)
+        # self.forgot_button = Button(self.window, text="Forgot Password?",
+        #                             font=("yu gothic ui", 13, "bold underline"), fg="red", relief=FLAT,
+        #                             activebackground="white"
+        #                             , borderwidth=0, background="white", cursor="hand2")
+        # self.forgot_button.place(x=767, y=410)
 
 
     # Command Function 
@@ -111,6 +108,30 @@ class LoginDash:
         self.show_button.place(x=890, y=377)
         self.password_entry.config(show='*')
 
+    def login_func(self):
+        if self.var_user_login.get()=='' or self.var_user_pass.get()=='':
+            messagebox.showerror("Error", "Field shouln't be empty", parent=self.window)
+        else:
+            con = sqlite3.connect(r'bs.db')
+            cur = con.cursor()
+            try:
+                cur.execute('SELECT * FROM users where username=? and pass=?', (self.var_user_login.get(),self.var_user_pass.get()))
+                row_data = cur.fetchone()
+                if row_data!=None:
+                    if row_data[2]=='Admin':
+                        self.newWindow = Toplevel(self.window)
+                        self.app = AdminDash(self.newWindow)
+                    elif row_data[2]=='Employee':
+                        self.newWindow = Toplevel(self.window)
+                        self.app = UserDash(self.newWindow)
+                    else:
+                        messagebox.showerror('Error', f'Some error happend', parent=self.window)
+
+                else:
+                    messagebox.showerror('Invalid', f'Invalid Username or Password', parent=self.window)
+                    
+            except Exception as ex:
+                messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
 
 def run_func():
     window = Tk()

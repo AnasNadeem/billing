@@ -15,10 +15,10 @@ class SigninDash:
         self.window.resizable(False, False)
 
         # Login Dashboard Text 
-        self.login_dash_text = Label(window, text='Signin Dashboard',
+        login_dash_text = Label(window, text='Signin Dashboard',
                                     font=("Roboto Regular", 36),
                                     fg=self.main_white_color,bg=self.main_black_color)
-        self.login_dash_text.place(x=0,y=0)
+        login_dash_text.place(x=0,y=0)
 
         # ADMIN LOGIN BUTTON
         self.admin_image_open = Image.open('images/adminbtn.png')

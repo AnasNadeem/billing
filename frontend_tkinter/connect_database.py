@@ -1,17 +1,29 @@
-from tkinter import *
+import sqlite3
+def create_db():
+    con = sqlite3.connect(database='bs.db')
+    cur = con.cursor()
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS inventory(
+        pr_id INTEGER PRIMARY KEY,
+        pr_name TEXT,
+        stocks INTEGER,
+        cost_price REAL,
+        sell_price REAL,
+        gst REAL,
+        ven_name TEXT,
+        ven_num TEXT
+    );
+    """)
+    cur.execute("""CREATE TABLE IF NOT EXISTS users(
+        id INTEGER PRIMARY KEY,
+        username TEXT NOT NULL UNIQUE,
+        admin TEXT NOT NULL,
+        email TEXT,
+        phone TEXT,
+        location TEXT NOT NULL,
+        pass TEXT NOT NULL
+    );
+    """)
+    con.commit()
 
-class ConnectDatabase:
-    def __init__(self, window):
-        self.window = window
-        self.window.geometry("1366x720+0+0")
-        self.window.title("Database Connection Form")
-        # self.window.iconbitmap("")
-        self.window.resizable(False, False)
-
-def win():
-    window = Tk()
-    ConnectDatabase(window)
-    window.mainloop()
-        
-if __name__ == '__main__':
-    win()
+create_db()

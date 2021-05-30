@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 from inventory_dash import InventoryDash
 from transaction_list import TransDash
 from about_soft import AboutDash
+from main_win import BillDash
 
 class UserDash:
     def __init__(self, window):
@@ -19,6 +20,13 @@ class UserDash:
         # Login Dashboard Text 
         self.admin_dash_text = Label(window, text='User Dashboard',font=("Roboto Regular", 36), fg=self.main_white_color,bg=self.main_black_color)
         self.admin_dash_text.place(x=0,y=0)
+
+        # Main Window Btn 
+        main_win_btn = Button(self.window, text='Main Window',
+                                cursor='hand2',fg=self.main_black_color,
+                                command=self.main_win_fun,                   
+                                bg='white', font=('Roboto Regular', 14, "bold"),width=14)
+        main_win_btn.place(x=1160, y=16)
 
         # Inventory  BUTTON
         self.inventory_image_open = Image.open('images/inventorytxtbtn.png')
@@ -64,6 +72,10 @@ class UserDash:
     def about_soft_win(self):
         self.newWindow = Toplevel(self.window)
         self.app = AboutDash(self.newWindow)
+
+    def main_win_fun(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = BillDash(self.newWindow)
 
 def run_func():
     window = Tk()

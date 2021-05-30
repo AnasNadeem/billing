@@ -3,6 +3,7 @@ from tkinter import *
 from PIL import Image, ImageTk
 from all_prod_list import AllProdDash
 from addprod import AddProdDash
+from main_win import BillDash
 
 class InventoryDash:
     def __init__(self, window):
@@ -18,6 +19,13 @@ class InventoryDash:
         # Inventory Dashboard Text 
         self.login_dash_text = Label(window, text='Inventory Dashboard',font=("Roboto Regular", 36), fg=self.main_white_color,bg=self.main_black_color)
         self.login_dash_text.place(x=0,y=0)
+
+        # Main Window Btn 
+        main_win_btn = Button(self.window, text='Main Window',
+                                cursor='hand2',fg=self.main_black_color,
+                                command=self.main_win_fun,                   
+                                bg='white', font=('Roboto Regular', 14, "bold"),width=14)
+        main_win_btn.place(x=1160, y=16)
 
         # All Prod List BUTTON
         self.all_product_image_open = Image.open('images/allprlisttxt.png')
@@ -49,6 +57,10 @@ class InventoryDash:
     def add_prod_new_win(self):
         self.newWindow = Toplevel(self.window)
         self.app = AddProdDash(self.newWindow)
+
+    def main_win_fun(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = BillDash(self.newWindow)
 
 def run_func():
     window = Tk()
