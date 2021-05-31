@@ -46,7 +46,7 @@ class AllProdDash:
         self.search_combo_select.grid(row=0, column=0,padx=40,pady=10)
         self.search_combo_select.current(0)
 
-        self.search_txt_entry = Entry(self.search_frame,relief=RIDGE, bg="white", fg="#6b6a69",
+        self.search_txt_entry = Entry(self.search_frame,relief=SUNKEN, bg="white", fg="#6b6a69",
                                         textvariable=self.var_search_by_val,font=("yu gothic ui semibold", 12))
         self.search_txt_entry.grid(row=0,column=1,padx=0,pady=10)
 
@@ -108,7 +108,7 @@ class AllProdDash:
                                     font=("yu gothic ui", 13, "bold"))
         prod_id_label.grid(row=0,column=0,padx=40,pady=20)
 
-        self.prod_id_entry = Entry(self.frame_for_update,relief=FLAT, bg="white", fg="#6b6a69",
+        self.prod_id_entry = Entry(self.frame_for_update,relief=SUNKEN, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12),
                                     textvariable=self.var_pr_id)
         self.prod_id_entry.grid(row=0,column=1,padx=0,pady=20)
@@ -118,7 +118,7 @@ class AllProdDash:
                                     font=("yu gothic ui", 13, "bold"))
         prod_name_label.grid(row=0,column=2,padx=40,pady=20)
 
-        self.prod_name_entry = Entry(self.frame_for_update,relief=FLAT, bg="white", fg="#6b6a69",
+        self.prod_name_entry = Entry(self.frame_for_update,relief=SUNKEN, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12),textvariable=self.var_pr_name)
         self.prod_name_entry.grid(row=0,column=3,padx=0,pady=20)
 
@@ -127,7 +127,7 @@ class AllProdDash:
                                     font=("yu gothic ui", 13, "bold"))
         prod_stock_label.grid(row=0,column=4,padx=40,pady=20)
 
-        self.prod_stock_entry = Entry(self.frame_for_update, relief=FLAT, bg="white", fg="#6b6a69",
+        self.prod_stock_entry = Entry(self.frame_for_update, relief=SUNKEN, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12),textvariable=self.var_stocks)
         self.prod_stock_entry.grid(row=0,column=5,padx=0,pady=20)
 
@@ -136,7 +136,7 @@ class AllProdDash:
                                     font=("yu gothic ui", 13, "bold"))
         cost_price_label.grid(row=1,column=0,padx=40,pady=20)
 
-        self.cost_price_entry = Entry(self.frame_for_update, relief=FLAT, bg="white", fg="#6b6a69",
+        self.cost_price_entry = Entry(self.frame_for_update, relief=SUNKEN, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12),textvariable=self.var_cost_price)
         self.cost_price_entry.grid(row=1,column=1,padx=0,pady=20)
 
@@ -145,7 +145,7 @@ class AllProdDash:
                                     font=("yu gothic ui", 13, "bold"))
         sell_price_label.grid(row=1,column=2,padx=40,pady=20)
 
-        self.sell_price_entry = Entry(self.frame_for_update, relief=FLAT, bg="white", fg="#6b6a69",
+        self.sell_price_entry = Entry(self.frame_for_update, relief=SUNKEN, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12),textvariable=self.var_sell_price)
         self.sell_price_entry.grid(row=1,column=3,padx=0,pady=20)
 
@@ -154,7 +154,7 @@ class AllProdDash:
                                     font=("yu gothic ui", 13, "bold"))
         self.gst_label.grid(row=1,column=4,padx=40,pady=20)
 
-        self.gst_entry = Entry(self.frame_for_update, relief=FLAT, bg="white", fg="#6b6a69",
+        self.gst_entry = Entry(self.frame_for_update, relief=SUNKEN, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12),textvariable=self.var_gst)
         self.gst_entry.grid(row=1,column=5,padx=0,pady=20)
 
@@ -163,7 +163,7 @@ class AllProdDash:
                                     font=("yu gothic ui", 13, "bold"))
         self.prod_stock_label.grid(row=2,column=0,padx=40,pady=20)
 
-        self.prod_stock_entry = Entry(self.frame_for_update, relief=FLAT, bg="white", fg="#6b6a69",
+        self.prod_stock_entry = Entry(self.frame_for_update, relief=SUNKEN, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12),textvariable=self.var_ven_name)
         self.prod_stock_entry.grid(row=2,column=1,padx=0,pady=20)
         # ============================Vendor Number====================================
@@ -171,7 +171,7 @@ class AllProdDash:
                                     font=("yu gothic ui", 13, "bold"))
         self.prod_stock_label.grid(row=2,column=2,padx=40,pady=20)
 
-        self.prod_stock_entry = Entry(self.frame_for_update, relief=FLAT, bg="white", fg="#6b6a69",
+        self.prod_stock_entry = Entry(self.frame_for_update, relief=SUNKEN, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12),textvariable=self.var_ven_num)
         self.prod_stock_entry.grid(row=2,column=3,padx=0,pady=20)
 

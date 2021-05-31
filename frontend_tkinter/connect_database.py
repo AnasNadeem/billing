@@ -24,6 +24,20 @@ def create_db():
         pass TEXT NOT NULL
     );
     """)
+    cur.execute("""CREATE TABLE IF NOT EXISTS bill(
+        bill_no INTEGER PRIMARY KEY,
+        s_no INTEGER,
+        cus_name TEXT,
+        cus_num TEXT,
+        prod_name TEXT,
+        price REAL,
+        quantity INTEGER,
+        total_amount REAL,
+        discount REAL,
+        gst REAL,
+        date TEXT
+    );
+    """)
     con.commit()
 
 create_db()

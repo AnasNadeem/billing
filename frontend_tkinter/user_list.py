@@ -52,7 +52,7 @@ class UserListDash:
         self.search_combo_select.grid(row=0, column=0,padx=40,pady=30)
         self.search_combo_select.current(0)
 
-        self.search_txt_entry = Entry(self.search_frame,relief=RIDGE,
+        self.search_txt_entry = Entry(self.search_frame,relief=SUNKEN,
                                             bg="white", fg="#6b6a69",
                                             textvariable=self.var_search_by_val,
                                             font=("yu gothic ui semibold", 12))
@@ -114,7 +114,7 @@ class UserListDash:
                                     font=("yu gothic ui", 13, "bold"))
         username_label.grid(row=0,column=0,padx=40,pady=20)
 
-        self.username_entry = Entry(self.frame_for_update,relief=FLAT,
+        self.username_entry = Entry(self.frame_for_update,relief=SUNKEN,
                                     textvariable=self.var_username,
                                     bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12))
@@ -134,7 +134,7 @@ class UserListDash:
                                     font=("yu gothic ui", 13, "bold"))
         email_label.grid(row=0,column=4,padx=40,pady=20)
 
-        self.email_entry = Entry(self.frame_for_update, relief=FLAT,
+        self.email_entry = Entry(self.frame_for_update, relief=SUNKEN,
                                     bg="white", fg="#6b6a69",
                                     textvariable=self.var_email,
                                     font=("yu gothic ui semibold", 12))
@@ -145,7 +145,7 @@ class UserListDash:
                                     font=("yu gothic ui", 13, "bold"))
         phone_num_label.grid(row=1,column=0,padx=40,pady=20)
 
-        self.phone_num_entry = Entry(self.frame_for_update, relief=FLAT,
+        self.phone_num_entry = Entry(self.frame_for_update, relief=SUNKEN,
                                     bg="white", fg="#6b6a69",
                                     textvariable=self.var_phone,
                                     font=("yu gothic ui semibold", 12))
@@ -159,7 +159,7 @@ class UserListDash:
         # sell_price_label.place(x=730, y=260)
         loc_label.grid(row=1,column=2,padx=40,pady=20)
 
-        self.loc_entry = Entry(self.frame_for_update, relief=FLAT,
+        self.loc_entry = Entry(self.frame_for_update, relief=SUNKEN,
                                     bg="white", fg="#6b6a69",
                                     textvariable=self.var_location,
                                     font=("yu gothic ui semibold", 12))
@@ -173,7 +173,7 @@ class UserListDash:
         # sell_price_label.place(x=730, y=260)
         pass_label.grid(row=1,column=4,padx=40,pady=20)
 
-        self.pass_entry = Entry(self.frame_for_update, relief=FLAT,
+        self.pass_entry = Entry(self.frame_for_update, relief=SUNKEN,
                                 bg="white", fg="#6b6a69",
                                 textvariable=self.var_pass,
                                 font=("yu gothic ui semibold", 12))
