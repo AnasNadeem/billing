@@ -72,6 +72,8 @@ class AllProdDash:
         self.main_list_tree = ttk.Treeview(self.frame_for_tree,
                 columns=("pr_id","pr_name","stocks","cost_price","sell_price","gst","ven_name", "ven_num"), show='headings', yscrollcommand=self.scrolly.set, xscrollcommand=self.scrollx.set )
 
+        self.main_list_tree['selectmode'] = 'browse'
+
         self.scrolly.pack(side=RIGHT, fill=Y)
         self.scrollx.pack(side=BOTTOM, fill=X)
 

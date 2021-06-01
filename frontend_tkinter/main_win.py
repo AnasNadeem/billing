@@ -135,6 +135,8 @@ class BillDash:
         self.main_list_tree = ttk.Treeview(self.frame_for_tree,
                 columns=("pr_name","sell_price","gst","stocks"), show='headings', yscrollcommand=self.scrolly.set,xscrollcommand=self.scrollx.set)
 
+        self.main_list_tree['selectmode'] = 'browse'
+
         self.scrolly.pack(side=RIGHT, fill=Y)
         self.scrollx.pack(side=BOTTOM, fill=X)
 
@@ -221,6 +223,22 @@ class BillDash:
                                 bg=self.main_black_color, font=('goudy old style', 14))
         self.add_to_cart_btn.place(x=600, y=276)
 
+        self.del_image_open = Image.open('images/bin.png')
+        self.del_image_open = self.del_image_open.resize((36, 36), Image.ANTIALIAS)
+        self.del_func_img = ImageTk.PhotoImage(self.del_image_open)
+
+        self.del_func_btn = Button(self.prod_frame, image=self.del_func_img,
+                                    cursor='hand2',command=self.delete_cart_func,
+                                    borderwidth=0,border=0)
+        self.del_func_btn.image = self.del_func_img
+        self.del_func_btn.place(x=724, y=276)
+
+        self.update_to_cart_btn = Button(self.prod_frame, text='Update',
+                                cursor='hand2',fg=self.main_white_color,
+                                command=self.update_cart_func,                
+                                bg=self.main_black_color, font=('goudy old style', 12))
+        self.update_to_cart_btn.place(x=700, y=326)
+
         # CART Frame
         self.cart_frame = Frame(self.window, bd=2, relief=FLAT)
         self.cart_frame.place(x=810, y=160, width=540, height=120)
@@ -230,6 +248,8 @@ class BillDash:
 
         self.add_to_cart_tree = ttk.Treeview(self.cart_frame,
                 columns=("s_no","pr_name","price","quantity","total","discount","gst"), show='headings', yscrollcommand=self.scrolly_cart.set,xscrollcommand=self.scrollx_cart.set)
+
+        self.add_to_cart_tree['selectmode'] = 'browse'
 
         self.scrolly_cart.pack(side=RIGHT, fill=Y)
         self.scrollx_cart.pack(side=BOTTOM, fill=X)
@@ -254,6 +274,8 @@ class BillDash:
         self.add_to_cart_tree.column('total',width=100)
         self.add_to_cart_tree.column('discount',width=100)
         self.add_to_cart_tree.column('gst',width=100)
+
+        self.add_to_cart_tree.bind("<ButtonRelease-1>", self.get_cart_func)
 
         # Bill FRAME 
         self.bill_frame = Frame(self.window, bd=2, relief=FLAT)
@@ -387,8 +409,7 @@ class BillDash:
             try:
                 cur.execute('SELECT * FROM inventory where pr_name=? and sell_price=?',(self.var_pr_name.get(),self.var_pr_price.get()))
                 row_db = cur.fetchone()
-                if row_db[2]>=self.var_quantity_prd.get(): 
-                    # print(f'{type(self.var_pr_price.get())}')
+                if row_db[2]>=self.var_quantity_prd.get():
                     total_amount_pr = (float(self.var_pr_price.get()) * float(self.var_quantity_prd.get()))
                     self.add_to_cart_tree.insert('', END, values=(
                     (len(self.add_to_cart_tree.get_children())+1),
@@ -399,29 +420,70 @@ class BillDash:
                     self.var_discount_prd.get(),
                     self.var_pr_gst.get(),
                     ))
+                    self.deselect_tree_item(self.main_list_tree)
+                    self.deselect_tree_item(self.add_to_cart_tree)
+                    self.show_in_bill()
                     self.clear_prod_fun()
+                    
                 else:
                     messagebox.showerror('Too much Quantity','Not much quantity left in stocks.', parent=self.window)
 
             except Exception as ex:
                 messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
-            
+
+    def get_cart_func(self, ev):
+        f = self.add_to_cart_tree.focus()
+        content = (self.add_to_cart_tree.item(f))
+        row = content['values']
+        self.var_pr_name.set(row[1])
+        self.var_pr_price.set(row[2])
+        self.var_pr_gst.set(row[6])
+        self.var_quantity_prd.set(row[3])
+        self.var_discount_prd.set(row[5])
+
+    def update_cart_func(self):
+        selected = self.add_to_cart_tree.focus()
+        temp = self.add_to_cart_tree.item(selected, 'values')
+        new_quantity = self.var_quantity_prd.get()
+        total_amount_pr = (float(self.var_pr_price.get()) * float(self.var_quantity_prd.get()))
+        new_discount = self.var_discount_prd.get()
+        self.add_to_cart_tree.item(selected, values=(temp[0], temp[1],temp[2],new_quantity,total_amount_pr,new_discount, temp[6]))
+        self.deselect_tree_item(self.main_list_tree)
+        self.deselect_tree_item(self.add_to_cart_tree)
+        self.show_in_bill()
+        self.clear_prod_fun()
+
+    def delete_cart_func(self):
+        f = self.add_to_cart_tree.focus()
+        content = (self.add_to_cart_tree.item(f))
+        row = content['values']
+        self.add_to_cart_tree.delete(f)
+        self.deselect_tree_item(self.main_list_tree)
+        self.deselect_tree_item(self.add_to_cart_tree)
+        self.show_in_bill()
+        self.clear_prod_fun()
+
     def clear_all_func(self):
         self.clear_prod_fun()
         self.var_cus_name.set('')
         self.var_cus_num.set('')
+        self.deselect_tree_item(self.main_list_tree)
+        self.deselect_tree_item(self.add_to_cart_tree)
         self.add_to_cart_tree.delete(*self.add_to_cart_tree.get_children())
+        self.bill_text_area.delete(11.0,END)
+
+    def deselect_tree_item(self, tree_name):
+        tree_name.selection_remove(tree_name.selection())
 
     def total_price_func(self):
         if len(self.add_to_cart_tree.get_children())==0:
-            messagebox.showerror('Error', 'Add some product to the cart.')
+            messagebox.showerror('Error', 'Add some product to the cart.',parent=self.window)
         else:
             children_rows = self.add_to_cart_tree.get_children()
             total_price_pr = 0
             for rows in children_rows:
                 total_price_pr = total_price_pr + float(self.add_to_cart_tree.item(rows)['values'][4])
-                # print(type(self.add_to_cart_tree.item(rows)['values'][4]))
-            messagebox.showinfo('Total Price', f'Total Price: {total_price_pr}')
+            messagebox.showinfo('Total Price', f'Total Price: {total_price_pr}',parent=self.window)
 
     def cus_name_key_press_func(self, ev):
         self.bill_text_area.delete(5.15,5.99)
@@ -430,6 +492,14 @@ class BillDash:
     def cus_num_key_press_func(self, ev):
         self.bill_text_area.delete(6.17,6.99)
         self.bill_text_area.insert(6.18,self.var_cus_num.get())
+
+    def show_in_bill(self):
+        child_rows = self.add_to_cart_tree.get_children()
+        self.bill_text_area.delete(11.0,END)
+        for rows in child_rows:
+            row = self.add_to_cart_tree.item(rows)['values']
+            self.bill_text_area.insert(END,f'\n\t{row[0]}\t{row[1]}\t{row[2]}\t{row[3]}\t{row[4]}\t{row[5]}\t{row[6]}')
+
 
     def fill_in_bill(self):
         self.bill_text_area.insert(END, f'\nInvoice Number: ')
