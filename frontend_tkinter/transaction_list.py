@@ -2,6 +2,8 @@ from tkinter import *
 import tkinter.ttk as ttk
 from PIL import Image, ImageTk
 from main_win import BillDash
+import sqlite3
+from tkinter import messagebox
 
 class TransDash:
     def __init__(self, window):
@@ -33,7 +35,7 @@ class TransDash:
         self.scrollx = Scrollbar(self.frame_for_tree, orient=HORIZONTAL)
         #Treeview
         self.main_list_tree = ttk.Treeview(self.frame_for_tree,
-                columns=("bill_no","pr_name","amount","profit","cus_name","cus_num", "date"), show='headings', yscrollcommand=self.scrolly.set, xscrollcommand=self.scrollx.set )
+                columns=("bill_no","cus_name","cus_num","pr_name","price","quantity","amount","discount","gst","date"), show='headings', yscrollcommand=self.scrolly.set, xscrollcommand=self.scrollx.set )
 
         self.scrolly.pack(side=RIGHT, fill=Y)
         self.scrollx.pack(side=BOTTOM, fill=X)
@@ -42,21 +44,27 @@ class TransDash:
         self.scrollx.config(command=self.main_list_tree.xview)
 
         self.main_list_tree.heading('bill_no', text="Bill No")
-        self.main_list_tree.heading('pr_name', text="Product Name")
-        self.main_list_tree.heading('amount', text="Total Amount")
-        self.main_list_tree.heading('profit', text="Profit")
         self.main_list_tree.heading('cus_name', text="Customer Name")
-        self.main_list_tree.heading('cus_num', text="Customer Num")
+        self.main_list_tree.heading('cus_num', text="Customer Number")
+        self.main_list_tree.heading('pr_name', text="Product Name")
+        self.main_list_tree.heading('price', text="Price")
+        self.main_list_tree.heading('quantity', text="Quantity")
+        self.main_list_tree.heading('amount', text="Total Amount")
+        self.main_list_tree.heading('discount', text="Discount")
+        self.main_list_tree.heading('gst', text="GST")
         self.main_list_tree.heading('date', text="Date")
         self.main_list_tree.pack(fill=BOTH, expand=1)
 
         self.main_list_tree.column('bill_no', width=100)
-        self.main_list_tree.column('pr_name', width=100)
-        self.main_list_tree.column('amount', width=100)
-        self.main_list_tree.column('profit', width=100)
         self.main_list_tree.column('cus_name', width=100)
         self.main_list_tree.column('cus_num',width=100)
-        self.main_list_tree.column('date',width=100)
+        self.main_list_tree.column('pr_name', width=100)
+        self.main_list_tree.column('price', width=100)
+        self.main_list_tree.column('quantity', width=100)
+        self.main_list_tree.column('amount', width=100)
+        self.main_list_tree.column('discount', width=100)
+        self.main_list_tree.column('gst', width=100)
+        self.main_list_tree.column('date', width=100)
 
         # Frame Search 
         self.search_frame = Frame(self.window, bd=2, relief=RIDGE)
@@ -80,6 +88,30 @@ class TransDash:
                                 bg=self.main_black_color, font=('goudy old style', 14),width=16)
         self.search_btn_search.grid(row=0, column=2,padx=40, pady=20)
         
+        self.show_all_tr_func()
+
+    def show_all_tr_func(self):
+        con = sqlite3.connect(r'bs.db')
+        cur = con.cursor()
+        try:
+            cur.execute('SELECT * FROM bill')
+            rows_db = cur.fetchall()
+            self.main_list_tree.delete(*self.main_list_tree.get_children())
+            for row in rows_db: 
+                self.main_list_tree.insert('', END, values=(
+                    row[0],
+                    row[2],
+                    row[3],
+                    row[4],
+                    row[5],
+                    row[6],
+                    row[7],
+                    row[8],
+                    row[9],
+                ))
+
+        except Exception as ex:
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
 
     def main_win_fun(self):
         self.newWindow = Toplevel(self.window)

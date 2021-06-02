@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 from PIL import Image, ImageTk
 import sqlite3
 from tkinter import messagebox
+from datetime import date, datetime
 
 class BillDash:
     def __init__(self, window):
@@ -335,6 +336,8 @@ class BillDash:
         self.var_pr_name.set(row[0])
         self.var_pr_price.set(row[1])
         self.var_pr_gst.set(row[2])
+        self.var_quantity_prd.set('')
+        self.quantity_txt_entry.focus()
        
     def show_all_prod_func(self):
         con = sqlite3.connect(r'bs.db')
@@ -348,7 +351,6 @@ class BillDash:
 
         except Exception as ex:
             messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
-
 
     def show_search_prod_func(self):
         con = sqlite3.connect(r'bs.db')
@@ -440,6 +442,7 @@ class BillDash:
         self.var_pr_gst.set(row[6])
         self.var_quantity_prd.set(row[3])
         self.var_discount_prd.set(row[5])
+        self.quantity_txt_entry.focus_set()
 
     def update_cart_func(self):
         selected = self.add_to_cart_tree.focus()
@@ -456,7 +459,6 @@ class BillDash:
     def delete_cart_func(self):
         f = self.add_to_cart_tree.focus()
         content = (self.add_to_cart_tree.item(f))
-        row = content['values']
         self.add_to_cart_tree.delete(f)
         self.deselect_tree_item(self.main_list_tree)
         self.deselect_tree_item(self.add_to_cart_tree)
@@ -483,11 +485,12 @@ class BillDash:
             total_price_pr = 0
             for rows in children_rows:
                 total_price_pr = total_price_pr + float(self.add_to_cart_tree.item(rows)['values'][4])
-            messagebox.showinfo('Total Price', f'Total Price: {total_price_pr}',parent=self.window)
+            self.bill_text_area.insert(END,f'\n =============================================================\n\t\t\tTotal Price:\t\t{total_price_pr}')
+            # messagebox.showinfo('Total Price', f'Total Price: {total_price_pr}',parent=self.window)
 
     def cus_name_key_press_func(self, ev):
         self.bill_text_area.delete(5.15,5.99)
-        self.bill_text_area.insert(5.16,self.var_cus_name.get())
+        self.bill_text_area.insert(5.16,self.var_cus_name.get().capitalize())
 
     def cus_num_key_press_func(self, ev):
         self.bill_text_area.delete(6.17,6.99)
@@ -506,13 +509,78 @@ class BillDash:
         self.bill_text_area.insert(END, f'\nCustomer Name: ')
         self.bill_text_area.insert(END, f'\nCustomer Number: ')
         self.bill_text_area.insert(END, """\n\n =============================================================""")
-        self.bill_text_area.insert(END, """\n   S.No\tProduct Name\tPrice\tQuantity\tTotal Price\tDiscount\tGST""")
+        self.bill_text_area.insert(END, """\n   S.No\tProduct Name Price Quantity Total Price Discount GST""")
         self.bill_text_area.insert(END, """\n =============================================================""")
 
-    
+    def convertToBinaryData(self, filename):
+        # Convert digital data to binary format
+        with open(filename, 'rb') as file:
+            blobData = file.read()
+        return blobData
 
     def general_bill_func(self):
-        pass
+        child_rows = self.add_to_cart_tree.get_children()
+        if child_rows==():
+            messagebox.showerror('Error', 'Please add product in Cart.', parent=self.window)
+        elif self.var_cus_name.get()=='' or self.var_cus_num.get()=='':
+            messagebox.showerror('Error', 'Please provide the customer details.', parent=self.window)
+        else:
+            con = sqlite3.connect(r'bs.db')
+            cur = con.cursor()
+            try:
+                self.total_price_func()
+                crnt_time = datetime.now()
+                crnt_day = crnt_time.strftime('%a')
+                crnt_month = crnt_time.strftime('%b')
+                crnt_date = crnt_time.strftime('%d')
+                crnt_year = crnt_time.strftime("%Y")
+                crnt_hour = crnt_time.strftime("%H")
+                crnt_minute = crnt_time.strftime("%M")
+                crnt_am_pm = crnt_time.strftime("%p")
+                file_name = f'temp_invoice_bill\{self.var_cus_name.get().capitalize()}{self.var_cus_num.get()}{crnt_hour}{crnt_minute}{crnt_am_pm}{crnt_day}{crnt_date}{crnt_month}{crnt_year}'
+                full_date = f'{crnt_hour} {crnt_minute} {crnt_am_pm} {crnt_day} {crnt_date} {crnt_month} {crnt_year}'
+                for rows in child_rows:
+                    row = self.add_to_cart_tree.item(rows)['values']
+                    with open(file_name, 'w') as f:
+                        f.write(self.bill_text_area.get(1.0, END))
+                
+                bill_file = self.convertToBinaryData(file_name)
+                cur.execute("""INSERT INTO bill (cus_name, cus_num, bill_file, date)
+                    VALUES(?,?,?,?)""",(
+                        self.var_cus_name.get().capitalize(),
+                        self.var_cus_num.get(),
+                        bill_file,
+                        full_date
+                    ))
+                con.commit()
+                self.update_bill_and_show(self.var_cus_name.get().capitalize(),self.var_cus_num.get(),full_date)
+            except Exception as ex:
+                messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+
+    def update_bill_and_show(self, cus_name,cus_num,date_bill):
+        con = sqlite3.connect(r'bs.db')
+        cur = con.cursor()
+        try:
+            cur.execute("""SELECT * from bill where cus_name=? and date=?""",(cus_name, date_bill))
+            fetched_billed = cur.fetchone()
+            file_bill_data = fetched_billed[3]
+            file_act_path = f'invoice_bill\{cus_name}{cus_num}{date_bill}'
+            with open(file_act_path, 'wb') as file:
+                file.write(file_bill_data)
+            with open(file_act_path, 'r+') as f:
+                contents = f.read().replace('Invoice Number:', f'Invoice Number: {fetched_billed[0]}')
+                f.seek(0)
+                f.truncate()
+                f.write(contents)
+            bill_file = self.convertToBinaryData(file_act_path)
+            with open(file_act_path,'r') as rf:
+                rf_file_txt = rf.read()
+                self.bill_text_area.delete(1.0, END)
+                self.bill_text_area.insert(1.0, rf_file_txt)
+            cur.execute("""UPDATE bill SET bill_file=? WHERE cus_name=? and date=?""",(bill_file,cus_name,date_bill))
+            con.commit()
+        except Exception as ex:
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
 
 def run_func():
     window = Tk()
