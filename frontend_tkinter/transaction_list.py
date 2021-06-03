@@ -15,6 +15,10 @@ class TransDash:
         self.window.title("Transactions Lists Dashboard")
         # self.window.iconbitmap("")
         self.window.resizable(False, False)
+        
+        # Defining Variable 
+        self.var_bill_search_by = StringVar()
+        self.var_bill_search_txt = StringVar()
 
         # Transaction Dashboard Text 
         self.admin_dash_text = Label(window, text='Transactions Lists Dashboard',font=("Roboto Regular", 36), fg=self.main_white_color,bg=self.main_black_color)
@@ -29,65 +33,77 @@ class TransDash:
 
         # Frame 
         self.frame_for_tree = Frame(self.window, bd=2, relief=RIDGE)
-        self.frame_for_tree.place(x=10, y=100,relwidth=1, height=400)
+        self.frame_for_tree.place(x=10, y=100,width=500, height=600)
 
         self.scrolly = Scrollbar(self.frame_for_tree, orient=VERTICAL)
         self.scrollx = Scrollbar(self.frame_for_tree, orient=HORIZONTAL)
         #Treeview
         self.main_list_tree = ttk.Treeview(self.frame_for_tree,
-                columns=("bill_no","cus_name","cus_num","pr_name","price","quantity","amount","discount","gst","date"), show='headings', yscrollcommand=self.scrolly.set, xscrollcommand=self.scrollx.set )
+                columns=("bill_no","cus_name","cus_num","date"), show='headings', yscrollcommand=self.scrolly.set, xscrollcommand=self.scrollx.set )
 
         self.scrolly.pack(side=RIGHT, fill=Y)
         self.scrollx.pack(side=BOTTOM, fill=X)
-
+        self.main_list_tree['selectmode'] = 'browse'
         self.scrolly.config(command=self.main_list_tree.yview)
         self.scrollx.config(command=self.main_list_tree.xview)
 
         self.main_list_tree.heading('bill_no', text="Bill No")
         self.main_list_tree.heading('cus_name', text="Customer Name")
         self.main_list_tree.heading('cus_num', text="Customer Number")
-        self.main_list_tree.heading('pr_name', text="Product Name")
-        self.main_list_tree.heading('price', text="Price")
-        self.main_list_tree.heading('quantity', text="Quantity")
-        self.main_list_tree.heading('amount', text="Total Amount")
-        self.main_list_tree.heading('discount', text="Discount")
-        self.main_list_tree.heading('gst', text="GST")
         self.main_list_tree.heading('date', text="Date")
         self.main_list_tree.pack(fill=BOTH, expand=1)
 
         self.main_list_tree.column('bill_no', width=100)
         self.main_list_tree.column('cus_name', width=100)
         self.main_list_tree.column('cus_num',width=100)
-        self.main_list_tree.column('pr_name', width=100)
-        self.main_list_tree.column('price', width=100)
-        self.main_list_tree.column('quantity', width=100)
-        self.main_list_tree.column('amount', width=100)
-        self.main_list_tree.column('discount', width=100)
-        self.main_list_tree.column('gst', width=100)
         self.main_list_tree.column('date', width=100)
 
+        self.main_list_tree.bind("<ButtonRelease-1>", self.show_prod_func)
         # Frame Search 
         self.search_frame = Frame(self.window, bd=2, relief=RIDGE)
-        self.search_frame.place(x=240, y=520, height=150,width=900)
+        self.search_frame.place(x=520, y=200, height=350,width=280)
 
         self.search_combo_select = ttk.Combobox(self.search_frame,
-                                values=("Select","Bill No","Pr Name", "Total Amount", "Profit","Customer Name","Customer Num","Date"),
+                                values=("Select By","Bill No","Customer Name","Customer Num","Date"),
                                 state='readonly', justify=CENTER,
-                                font=('goudy old style', 14)
+                                font=('goudy old style', 14),
+                                textvariable=self.var_bill_search_by
                                 )
         # self.search_combo_select.place(x=10, y=10, width=180)
-        self.search_combo_select.grid(row=0, column=0,padx=40,pady=50)
+        self.search_combo_select.grid(row=0, column=0,padx=24,pady=20)
         self.search_combo_select.current(0)
 
-        self.search_txt_entry = Entry(self.search_frame,relief=RIDGE, bg="white", fg="#6b6a69",
-                                            font=("yu gothic ui semibold", 12))
-        self.search_txt_entry.grid(row=0,column=1,padx=0,pady=50)
+        self.search_txt_entry = Entry(self.search_frame,relief=SUNKEN, 
+                                            bg="white", fg="#6b6a69",
+                                            font=("yu gothic ui semibold", 14),
+                                            textvariable=self.var_bill_search_txt)
+        self.search_txt_entry.grid(row=1,column=0,padx=24,pady=20)
 
         self.search_btn_search =Button(self.search_frame, text='Search',
-                                cursor='hand2',fg=self.main_white_color,                   
+                                cursor='hand2',fg=self.main_white_color,
+                                command=self.search_bill_func,            
                                 bg=self.main_black_color, font=('goudy old style', 14),width=16)
-        self.search_btn_search.grid(row=0, column=2,padx=40, pady=20)
+        self.search_btn_search.grid(row=2, column=0,padx=24, pady=20)
+
+        self.del_trns_btn =Button(self.search_frame, text='Delete',
+                                cursor='hand2',fg=self.main_white_color,
+                                command=self.del_trns_func,                   
+                                bg=self.main_black_color, font=('goudy old style', 14),width=16)
+        self.del_trns_btn.grid(row=3, column=0,padx=10, pady=20)
         
+        # Bill AREA FRAME 
+        self.bill_frame = LabelFrame(self.window,text="Bill Information", bd=2, relief=FLAT)
+        self.bill_frame.place(x=810, y=100, width=540, height=600)
+
+        self.scrolly_bill = Scrollbar(self.bill_frame, orient=VERTICAL)
+        
+        self.bill_text_area = Text(self.bill_frame, yscrollcommand=self.scrolly_bill.set)
+        self.scrolly_bill.pack(side=RIGHT, fill=Y)
+
+        self.scrolly_bill.config(command=self.bill_text_area.yview)
+
+        self.bill_text_area.pack(fill=BOTH, expand=1)
+
         self.show_all_tr_func()
 
     def show_all_tr_func(self):
@@ -100,18 +116,111 @@ class TransDash:
             for row in rows_db: 
                 self.main_list_tree.insert('', END, values=(
                     row[0],
+                    row[1],
                     row[2],
-                    row[3],
                     row[4],
-                    row[5],
-                    row[6],
-                    row[7],
-                    row[8],
-                    row[9],
                 ))
 
         except Exception as ex:
             messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+
+    def del_trns_func(self):
+        con = sqlite3.connect(r'bs.db')
+        cur = con.cursor()
+        f = self.main_list_tree.focus()
+        content = (self.main_list_tree.item(f))
+        row = content['values']
+        try:
+            cur.execute('SELECT * FROM bill where bill_no=?', (row[0],))
+            yes_no = messagebox.askyesno('Are you Sure?', f'Sure to Delete {row[1]}?', parent=self.window)
+            if yes_no:
+                cur.execute("DELETE FROM bill where bill_no=?",(row[0],))
+                con.commit()
+                self.show_all_tr_func()
+            else:
+                messagebox.showinfo('Not deleted', f'{row[1]} is not deleted :)', parent=self.window)
+                
+        except Exception as ex:
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+
+    def show_prod_func(self, ev):
+        con = sqlite3.connect(r'bs.db')
+        cur = con.cursor()
+        f = self.main_list_tree.focus()
+        content = (self.main_list_tree.item(f))
+        row = content['values']
+        try:
+            cur.execute('SELECT * FROM bill where bill_no=?', (row[0],))
+            row_db = cur.fetchone()
+            file_act_path = f'invoice_bill\{row_db[1]}{row_db[2]}{row_db[4]}'
+            with open(file_act_path,'r') as rf:
+                rf_file_txt = rf.read()
+                self.bill_text_area.delete(1.0, END)
+                self.bill_text_area.insert(1.0, rf_file_txt)
+        except Exception as ex:
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+
+    def search_bill_func(self):
+        con = sqlite3.connect(r'bs.db')
+        cur = con.cursor()
+        try:
+            if self.var_bill_search_by.get()=='Select By':
+                messagebox.showwarning('Please Select', "Select an option", parent=self.window)
+            elif self.var_bill_search_by.get()=='Bill No':
+                cur.execute('SELECT * FROM bill WHERE bill_no=?', (self.var_bill_search_txt.get(),))
+                rows_db = cur.fetchall()
+                if rows_db!=[]:
+                    self.main_list_tree.delete(*self.main_list_tree.get_children())
+                    for row in rows_db:
+                        self.main_list_tree.insert('', END, values=(
+                    row[0],
+                    row[1],
+                    row[2],
+                    row[4],))
+                else:
+                    messagebox.showinfo('No Matching Results', f'Nothing Matched With Bill No: {self.var_bill_search_txt.get()}.', parent=self.window)
+            elif self.var_bill_search_by.get()=='Customer Name':
+                cur.execute('SELECT * FROM bill WHERE cus_name=?', (self.var_bill_search_txt.get().capitalize(),))
+                rows_db = cur.fetchall()
+                if rows_db!=[]:
+                    self.main_list_tree.delete(*self.main_list_tree.get_children())
+                    for row in rows_db:
+                        self.main_list_tree.insert('', END, values=(
+                    row[0],
+                    row[1],
+                    row[2],
+                    row[4],))
+                else:
+                    messagebox.showinfo('No Matching Results', f'Nothing Matched by {self.var_bill_search_txt.get()}.', parent=self.window)
+            elif self.var_bill_search_by.get()=='Customer Num':
+                cur.execute('SELECT * FROM bill WHERE cus_num=?', (self.var_bill_search_txt.get(),))
+                rows_db = cur.fetchall()
+                if rows_db!=[]:
+                    self.main_list_tree.delete(*self.main_list_tree.get_children())
+                    for row in rows_db:
+                        self.main_list_tree.insert('', END, values=(
+                    row[0],
+                    row[1],
+                    row[2],
+                    row[4],))
+                else:
+                    messagebox.showinfo('No Matching Results', f'Nothing Matched by {self.var_bill_search_txt.get()}.', parent=self.window)
+            elif self.var_bill_search_by.get()=='Date':
+                cur.execute('SELECT * FROM bill WHERE date=?', (self.var_bill_search_txt.get(),))
+                rows_db = cur.fetchall()
+                if rows_db!=[]:
+                    self.main_list_tree.delete(*self.main_list_tree.get_children())
+                    for row in rows_db:
+                        self.main_list_tree.insert('', END, values=(
+                    row[0],
+                    row[1],
+                    row[2],
+                    row[4],))
+                else:
+                    messagebox.showinfo('No Matching Results', f'Nothing Matched With Email Id: {self.var_bill_search_txt.get()}.', parent=self.window)
+        except Exception as ex:
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+
 
     def main_win_fun(self):
         self.newWindow = Toplevel(self.window)

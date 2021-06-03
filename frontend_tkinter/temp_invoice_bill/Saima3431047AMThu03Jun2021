@@ -1,13 +1,14 @@
 		   Ripe Chilli Enterprises
 			Khagaul Patna
 			    801105
-Invoice Number: 3 
-Customer Name: Saif
-Customer Number: 798989
+Invoice Number: 
+Customer Name: Saima
+Customer Number: 343
 
  =============================================================
    S.No	Product Name Price Quantity Total Price Discount GST
  =============================================================
 	1	Vivo	30.0	3	90.0	0.0	12.0
+	2	Linux	230.0	1	230.0	0.0	18.0
  =============================================================
-			Total Price:		90.0
+			Total Price:		320.0

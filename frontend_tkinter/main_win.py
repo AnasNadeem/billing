@@ -85,12 +85,14 @@ class BillDash:
         self.search_txt_entry.grid(row=0,column=1,padx=0,pady=10)
 
         self.search_cus_btn = Button(self.bill_details_frame, text='Search Bill',
-                                cursor='hand2',fg=self.main_white_color,                
+                                cursor='hand2',fg=self.main_white_color,
+                                command=self.search_invoice_func,                
                                 bg=self.main_black_color, font=('goudy old style', 14))
         self.search_cus_btn.grid(row=0,column=2,padx=20,pady=10)
 
         self.search_cus_btn = Button(self.bill_details_frame, text='Clear',
-                                cursor='hand2',fg=self.main_white_color,                
+                                cursor='hand2',fg=self.main_white_color,
+                                command=self.clear_invoice_func,              
                                 bg=self.main_black_color, font=('goudy old style', 14))
         self.search_cus_btn.grid(row=0,column=3,padx=0,pady=10)
 
@@ -473,6 +475,7 @@ class BillDash:
         self.deselect_tree_item(self.add_to_cart_tree)
         self.add_to_cart_tree.delete(*self.add_to_cart_tree.get_children())
         self.bill_text_area.delete(11.0,END)
+        self.clear_invoice_func()
 
     def deselect_tree_item(self, tree_name):
         tree_name.selection_remove(tree_name.selection())
@@ -541,6 +544,7 @@ class BillDash:
                 full_date = f'{crnt_hour} {crnt_minute} {crnt_am_pm} {crnt_day} {crnt_date} {crnt_month} {crnt_year}'
                 for rows in child_rows:
                     row = self.add_to_cart_tree.item(rows)['values']
+                    # print(row)
                     with open(file_name, 'w') as f:
                         f.write(self.bill_text_area.get(1.0, END))
                 
@@ -554,6 +558,8 @@ class BillDash:
                     ))
                 con.commit()
                 self.update_bill_and_show(self.var_cus_name.get().capitalize(),self.var_cus_num.get(),full_date)
+                self.upd_prod_fun()
+                self.show_all_prod_func()
             except Exception as ex:
                 messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
 
@@ -579,6 +585,51 @@ class BillDash:
                 self.bill_text_area.insert(1.0, rf_file_txt)
             cur.execute("""UPDATE bill SET bill_file=? WHERE cus_name=? and date=?""",(bill_file,cus_name,date_bill))
             con.commit()
+        except Exception as ex:
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+
+    def search_invoice_func(self):
+        if self.var_invoice_num.get()!='':
+            con = sqlite3.connect(r'bs.db')
+            cur = con.cursor()
+            try:
+                cur.execute("""SELECT * from bill where bill_no=?""",(self.var_invoice_num.get(),))
+                bill_fetch = cur.fetchone()
+                if bill_fetch is None:
+                    messagebox.showerror('Not Found', f'Invoice Not Found', parent=self.window)
+                else:
+                    file_act_path = f'invoice_bill\{bill_fetch[1]}{bill_fetch[2]}{bill_fetch[4]}'
+                    with open(file_act_path,'r') as rf:
+                        rf_file_txt = rf.read()
+                        self.bill_text_area.delete(1.0, END)
+                        self.bill_text_area.insert(1.0, rf_file_txt)
+            except Exception as ex:
+                messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+        else:
+            messagebox.showerror('Error', f'Enter Invoice number', parent=self.window)
+
+    def clear_invoice_func(self):
+        self.var_invoice_num.set('')
+        self.bill_text_area.delete(4.16,4.99)
+        self.bill_text_area.delete(5.15,5.99)
+        self.bill_text_area.delete(6.16,6.99)
+        self.bill_text_area.delete(11.0,END)
+
+    def upd_prod_fun(self):
+        con = sqlite3.connect(r'bs.db')
+        cur = con.cursor()
+        try:
+            child_rows = self.add_to_cart_tree.get_children()
+            for rows in child_rows:
+                row = self.add_to_cart_tree.item(rows)['values']
+                cur.execute("""SELECT * FROM inventory where pr_name=? AND sell_price=?""",(row[1],row[2]))
+                fetch_data = cur.fetchone()
+                cur.execute("""UPDATE inventory SET stocks=? WHERE pr_name = ? AND sell_price=?""",(
+                    fetch_data[2]-row[3],
+                    row[1],
+                    row[2]
+                ))
+                con.commit()
         except Exception as ex:
             messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
 
