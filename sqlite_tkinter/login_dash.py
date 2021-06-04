@@ -83,6 +83,7 @@ class LoginDash:
                                 bg=self.main_black_color, font=('goudy old style', 14),width=16)
         self.login_button.place(x=640, y=450)
 
+        self.password_entry.bind('<Return>',self.login_func)
         # ============================Forgot password=============================
         # self.forgot_button = Button(self.window, text="Forgot Password?",
         #                             font=("yu gothic ui", 13, "bold underline"), fg="red", relief=FLAT,
@@ -108,7 +109,7 @@ class LoginDash:
         self.show_button.place(x=890, y=377)
         self.password_entry.config(show='*')
 
-    def login_func(self):
+    def login_func(self, ev):
         if self.var_user_login.get()=='' or self.var_user_pass.get()=='':
             messagebox.showerror("Error", "Field shouln't be empty", parent=self.window)
         else:

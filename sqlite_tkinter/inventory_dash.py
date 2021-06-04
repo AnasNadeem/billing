@@ -20,10 +20,10 @@ class InventoryDash:
         self.login_dash_text = Label(window, text='Inventory Dashboard',font=("Roboto Regular", 36), fg=self.main_white_color,bg=self.main_black_color)
         self.login_dash_text.place(x=0,y=0)
 
-        # Main Window Btn 
-        main_win_btn = Button(self.window, text='Main Window',
+        # Dashboard Btn 
+        main_win_btn = Button(self.window, text='Dashboard',
                                 cursor='hand2',fg=self.main_black_color,
-                                command=self.main_win_fun,                   
+                                command=self.go_to_dashboard_func,                   
                                 bg='white', font=('Roboto Regular', 14, "bold"),width=14)
         main_win_btn.place(x=1160, y=16)
 
@@ -58,9 +58,8 @@ class InventoryDash:
         self.newWindow = Toplevel(self.window)
         self.app = AddProdDash(self.newWindow)
 
-    def main_win_fun(self):
-        self.newWindow = Toplevel(self.window)
-        self.app = BillDash(self.newWindow)
+    def go_to_dashboard_func(self):
+        self.window.destroy()
 
 def run_func():
     window = Tk()

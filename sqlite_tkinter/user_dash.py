@@ -1,7 +1,8 @@
 from tkinter import *
 # from tkinter.ttk import *
 from PIL import Image, ImageTk
-from inventory_dash import InventoryDash
+# from inventory_dash import InventoryDash
+from all_prod_list import AllProdDash
 from transaction_list import TransDash
 from about_soft import AboutDash
 from main_win import BillDash
@@ -63,7 +64,7 @@ class UserDash:
 
     def invent_new_win(self):
         self.newWindow = Toplevel(self.window)
-        self.app = InventoryDash(self.newWindow)
+        self.app = AllProdDash(self.newWindow)
 
     def transaction_new_win(self):
         self.newWindow = Toplevel(self.window)

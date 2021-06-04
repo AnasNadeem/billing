@@ -20,9 +20,9 @@ class AboutDash:
         about_dash_text.place(x=0,y=0)
 
         # Main Window Btn 
-        main_win_btn = Button(self.window, text='Main Window',
+        main_win_btn = Button(self.window, text='Dashboard',
                                 cursor='hand2',fg=self.main_black_color,
-                                command=self.main_win_fun,                   
+                                command=self.go_to_dashboard_func,                   
                                 bg='white', font=('Roboto Regular', 14, "bold"),width=14)
         main_win_btn.place(x=1160, y=16)
 
@@ -31,13 +31,12 @@ class AboutDash:
 
         ripe_chilli_label.bind("<Button-1>", lambda e: self.open_website("http://ripechilli.com"))
 
-    def main_win_fun(self):
-        self.newWindow = Toplevel(self.window)
-        self.app = BillDash(self.newWindow)
-
     #Define a website function
     def open_website(self, url):
         webbrowser.open_new_tab(url)
+    
+    def go_to_dashboard_func(self):
+        self.window.destroy()
 
 def run_func():
     window = Tk()

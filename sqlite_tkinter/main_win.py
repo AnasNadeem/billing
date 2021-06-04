@@ -3,7 +3,7 @@ import tkinter.ttk as ttk
 from PIL import Image, ImageTk
 import sqlite3
 from tkinter import messagebox
-from datetime import date, datetime
+from datetime import datetime
 
 class BillDash:
     def __init__(self, window):
@@ -38,7 +38,8 @@ class BillDash:
 
         # Dashboard Btn 
         main_win_btn = Button(self.window, text='Dashboard',
-                                cursor='hand2',fg=self.main_black_color,                   
+                                cursor='hand2',fg=self.main_black_color, 
+                                command=self.go_to_dashboard_func,                  
                                 bg='white', font=('Roboto Regular', 14, "bold"),width=14)
         main_win_btn.place(x=1170, y=10)
 
@@ -474,7 +475,7 @@ class BillDash:
         self.deselect_tree_item(self.main_list_tree)
         self.deselect_tree_item(self.add_to_cart_tree)
         self.add_to_cart_tree.delete(*self.add_to_cart_tree.get_children())
-        self.bill_text_area.delete(11.0,END)
+        self.bill_text_area.delete(12.0,END)
         self.clear_invoice_func()
 
     def deselect_tree_item(self, tree_name):
@@ -501,7 +502,7 @@ class BillDash:
 
     def show_in_bill(self):
         child_rows = self.add_to_cart_tree.get_children()
-        self.bill_text_area.delete(11.0,END)
+        self.bill_text_area.delete(12.0,END)
         for rows in child_rows:
             row = self.add_to_cart_tree.item(rows)['values']
             self.bill_text_area.insert(END,f'\n\t{row[0]}\t{row[1]}\t{row[2]}\t{row[3]}\t{row[4]}\t{row[5]}\t{row[6]}')
@@ -511,6 +512,7 @@ class BillDash:
         self.bill_text_area.insert(END, f'\nInvoice Number: ')
         self.bill_text_area.insert(END, f'\nCustomer Name: ')
         self.bill_text_area.insert(END, f'\nCustomer Number: ')
+        self.bill_text_area.insert(END, f"\nDate:")
         self.bill_text_area.insert(END, """\n\n =============================================================""")
         self.bill_text_area.insert(END, """\n   S.No\tProduct Name Price Quantity Total Price Discount GST""")
         self.bill_text_area.insert(END, """\n =============================================================""")
@@ -544,10 +546,13 @@ class BillDash:
                 full_date = f'{crnt_hour} {crnt_minute} {crnt_am_pm} {crnt_day} {crnt_date} {crnt_month} {crnt_year}'
                 for rows in child_rows:
                     row = self.add_to_cart_tree.item(rows)['values']
-                    # print(row)
                     with open(file_name, 'w') as f:
                         f.write(self.bill_text_area.get(1.0, END))
-                
+                with open(file_name, 'r+') as f:
+                    contents = f.read().replace("Date:", f"Date: {datetime.now().strftime('%c')}")
+                    f.seek(0)
+                    f.truncate()
+                    f.write(contents)
                 bill_file = self.convertToBinaryData(file_name)
                 cur.execute("""INSERT INTO bill (cus_name, cus_num, bill_file, date)
                     VALUES(?,?,?,?)""",(
@@ -613,7 +618,7 @@ class BillDash:
         self.bill_text_area.delete(4.16,4.99)
         self.bill_text_area.delete(5.15,5.99)
         self.bill_text_area.delete(6.16,6.99)
-        self.bill_text_area.delete(11.0,END)
+        self.bill_text_area.delete(12.0,END)
 
     def upd_prod_fun(self):
         con = sqlite3.connect(r'bs.db')
@@ -632,6 +637,9 @@ class BillDash:
                 con.commit()
         except Exception as ex:
             messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+
+    def go_to_dashboard_func(self):
+        self.window.destroy()
 
 def run_func():
     window = Tk()

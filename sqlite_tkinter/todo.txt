@@ -1,0 +1,8 @@
+Discount ni bna hai
+Online Database
+    Location k hisab hai
+Quantity Combobox 
+Search m auto suggestion
+Validation in entry field
+Admin User kon login kiya hai wo dekhte rhna
+GSTIN BILL Mai  (Depends)
