@@ -3,7 +3,6 @@ from tkinter import *
 from PIL import Image, ImageTk
 from tkinter import messagebox
 from admin_dash import AdminDash
-from user_dash import UserDash
 import psycopg2
 
 DB_HOST = 'localhost'
@@ -58,6 +57,23 @@ class LoginDash:
                                     font=("yu gothic ui semibold", 12))
         self.username_entry.place(x=530, y=255, width=380)
 
+        # User and Pass LOGO 
+        self.user_image_open = Image.open('images/user.png')
+        self.user_image_open = self.user_image_open.resize((20, 20), Image.ANTIALIAS)
+        self.user_image = ImageTk.PhotoImage(self.user_image_open)
+
+        self.user_image_label = Label(self.window, image=self.user_image,bg='white')
+        self.user_image_label.image = self.user_image
+        self.user_image_label.place(x=500, y=255)
+
+        self.pass_image_open = Image.open('images/pass.png')
+        self.pass_image_open = self.pass_image_open.resize((20, 20), Image.ANTIALIAS)
+        self.pass_image = ImageTk.PhotoImage(self.pass_image_open)
+
+        self.pass_image_label = Label(self.window, image=self.pass_image)
+        self.pass_image_label.image = self.pass_image
+        self.pass_image_label.place(x=500, y=370)
+        
         # ============================Password====================================
         password_label = Label(self.window, text="Password ",
                                     bg="white", fg="#4f4e4d",
@@ -86,7 +102,7 @@ class LoginDash:
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.login_func,                   
                                 bg=self.main_black_color, font=('goudy old style', 14),width=16)
-        self.login_button.place(x=640, y=450)
+        self.login_button.place(x=620, y=450)
 
         # self.password_entry.bind('<Return>',self.login_func)
         # ============================Forgot password=============================
@@ -123,15 +139,8 @@ class LoginDash:
                 cur.execute('SELECT * FROM users where username=%s and pass=%s', (self.var_user_login.get(),self.var_user_pass.get()))
                 row_data = cur.fetchone()
                 if row_data!=None:
-                    if row_data[2]=='Admin':
-                        self.newWindow = Toplevel(self.window)
-                        self.app = AdminDash(self.newWindow,self.var_user_login.get())
-                    elif row_data[2]=='Employee':
-                        self.newWindow = Toplevel(self.window)
-                        self.app = UserDash(self.newWindow, self.var_user_login.get())
-                    else:
-                        messagebox.showerror('Error', f'Some error happend', parent=self.window)
-
+                    self.newWindow = Toplevel(self.window)
+                    self.app = AdminDash(self.newWindow,self.var_user_login.get())
                 else:
                     messagebox.showerror('Invalid', f'Invalid Username or Password', parent=self.window)
                     

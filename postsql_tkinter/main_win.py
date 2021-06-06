@@ -629,16 +629,30 @@ class BillDash:
             con = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASS)
             cur = con.cursor()
             try:
-                cur.execute("""SELECT * from bill where bill_no=%s""",(self.var_invoice_num.get(),))
-                bill_fetch = cur.fetchone()
-                if bill_fetch is None:
-                    messagebox.showerror('Not Found', f'Invoice Not Found', parent=self.window)
+                cur.execute("""SELECT * FROM users WHERE username=%s""", (self.username,))
+                loc_db= cur.fetchone()
+                if loc_db[5]!="All":
+                    cur.execute("""SELECT * from bill where bill_no=%s and location=%s""",(self.var_invoice_num.get(),loc_db[5]))
+                    bill_fetch = cur.fetchone()
+                    if bill_fetch is None:
+                        messagebox.showerror('Not Found', f'Invoice Not Found', parent=self.window)
+                    else:
+                        file_act_path = f'invoice_bill\{bill_fetch[1]}{bill_fetch[2]}{bill_fetch[4]}'
+                        with open(file_act_path,'r') as rf:
+                            rf_file_txt = rf.read()
+                            self.bill_text_area.delete(1.0, END)
+                            self.bill_text_area.insert(1.0, rf_file_txt)
                 else:
-                    file_act_path = f'invoice_bill\{bill_fetch[1]}{bill_fetch[2]}{bill_fetch[4]}'
-                    with open(file_act_path,'r') as rf:
-                        rf_file_txt = rf.read()
-                        self.bill_text_area.delete(1.0, END)
-                        self.bill_text_area.insert(1.0, rf_file_txt)
+                    cur.execute("""SELECT * from bill where bill_no=%s""",(self.var_invoice_num.get(),))
+                    bill_fetch = cur.fetchone()
+                    if bill_fetch is None:
+                        messagebox.showerror('Not Found', f'Invoice Not Found', parent=self.window)
+                    else:
+                        file_act_path = f'invoice_bill\{bill_fetch[1]}{bill_fetch[2]}{bill_fetch[4]}'
+                        with open(file_act_path,'r') as rf:
+                            rf_file_txt = rf.read()
+                            self.bill_text_area.delete(1.0, END)
+                            self.bill_text_area.insert(1.0, rf_file_txt)
             except Exception as ex:
                 messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
         else:
