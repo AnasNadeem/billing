@@ -1,0 +1,16 @@
+All prod m prod k stock 0 ko ni dikhana
+# cur.execute("""
+#     SELECT * FROM bill WHERE (cus_id=%s AND paid=%s) AND date=%s
+#     """,(
+#         self.var_cus_id.get(),
+#         'yes',
+#         current_date
+#     ))
+
+# for bill in bill_list:
+#     cur.execute('SELECT * FROM inventory WHERE id=%s',(bill[2],))
+#     prod = cur.fetchone()
+#     prd_list = [s_no, prod[1],prod[0],prod[4],prod[4]*bill[5]]
+#     total_price+=prod[4]*bill[5]
+#     all_prd_list.append(prd_list)
+#     s_no+=1

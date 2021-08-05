@@ -1,0 +1,38 @@
+Login Signin System:
+	Admin based:
+		Can CRUD everything of every location
+	Employee based:
+		Can CRU everything on its own location
+
+1. Inventory 
+2. Payment Mode
+2. Customer Details
+3. Bill 
+Inventory:
+	Products:
+		pr_id(will be the pr_name itself or pr_slug) or QR code ID i.e IMEDI
+		pr_name
+		pr_availability (default will be 1)
+		pr_cp_price
+		pr_sp_price
+		c_gst
+		s_gst
+		ven_name
+		ven_purchase_mode
+Payment Mode:
+	id 
+	name 
+	percentage	
+
+Customer Details:
+	id 
+	cus_name
+	cus_num
+	cus_address
+
+Bill:
+	cus_id Foreign Key(Customer Details(id))
+	payment_mode Foreign Key(Payment Mode(id))
+	pr_id Foreign Key (Products(pr_id))
+	date
+	time	
