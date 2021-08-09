@@ -6,7 +6,7 @@ from admin_dash import AdminDash
 import psycopg2
 
 DB_HOST = 'localhost'
-DB_NAME = 'postgres'
+DB_NAME = 'mobiledb'
 DB_USER = 'postgres'
 DB_PASS = 'Anas@123Great'
 
@@ -16,7 +16,6 @@ class LoginDash:
         self.window.geometry("1366x720+70+50")
         self.main_black_color = '#0f0f0f'
         self.main_white_color = '#f8f8f8'
-        # self.window['bg'] = self.main_black_color
         self.window.title("Login Dashboard")
         self.login_frame = ImageTk.PhotoImage \
                 (file='images\\login_frame_img.png')
@@ -35,16 +34,6 @@ class LoginDash:
                                     font=("Roboto Regular", 36),
                                     fg=self.main_white_color, bg=self.main_black_color)
         login_dash_text.place(x=0,y=0)
-
-
-        # White Box
-        # self.box_image_open = Image.open('images/whitebox.png')
-        # self.box_image_open = self.box_image_open.resize((480, 500), Image.ANTIALIAS)
-        # self.box_image_img = ImageTk.PhotoImage(self.box_image_open)
-
-        # self.box_image_btn = Label(window, image=self.box_image_img, border=0)
-        # self.box_image_btn.image = self.box_image_img
-        # self.box_image_btn.place(x=443, y=120)
 
         # ============================Username====================================
         username_label = Label(self.window, text="Username ", bg="white", fg="#4f4e4d",
@@ -101,7 +90,7 @@ class LoginDash:
         self.login_button = Button(self.window, text='Login',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.login_func,                   
-                                bg=self.main_black_color, font=('goudy old style', 14),width=16)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"),width=16)
         self.login_button.place(x=620, y=450)
 
         # self.password_entry.bind('<Return>',self.login_func)
@@ -140,7 +129,7 @@ class LoginDash:
                 row_data = cur.fetchone()
                 if row_data!=None:
                     self.newWindow = Toplevel(self.window)
-                    self.app = AdminDash(self.newWindow,self.var_user_login.get())
+                    self.app = AdminDash(self.newWindow)
                 else:
                     messagebox.showerror('Invalid', f'Invalid Username or Password', parent=self.window)
                     

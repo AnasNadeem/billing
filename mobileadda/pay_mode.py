@@ -96,31 +96,31 @@ class PayDash:
         self.save_prod_btn = Button(self.frame_for_pay_mode, text='Save',
                             cursor='hand2',fg=self.main_white_color,
                             command=self.add_pay_mode_func,                   
-                            bg=self.main_black_color, font=('goudy old style', 14))
+                            bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.save_prod_btn.grid(row=3,column=0,padx=40,pady=20)
 
         self.update_prod_btn = Button(self.frame_for_pay_mode, text='Update',
                                 cursor='hand2',fg=self.main_white_color,   
                                 command=self.upd_pay_mode_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.update_prod_btn.grid(row=3,column=1,padx=40,pady=20)
 
         self.del_prod_btn = Button(self.frame_for_pay_mode, text='Delete',
                                 cursor='hand2',fg=self.main_white_color,  
                                 command=self.del_pay_mode_func,                 
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.del_prod_btn.grid(row=3,column=2,padx=40,pady=20)
 
         self.clear_prod_btn = Button(self.frame_for_pay_mode, text='Clear',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.clear_pay_mode_func,                   
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.clear_prod_btn.grid(row=4,column=0,padx=40,pady=20)
 
         self.dashboard_btn = Button(self.frame_for_pay_mode, text='Dashboard',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.go_to_dashboard_func,                   
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.dashboard_btn.grid(row=4,column=1,padx=40,pady=20)
 
     def get_pay_mode_data(self, ev):
@@ -235,11 +235,3 @@ class PayDash:
 
     def deselect_tree_item(self, tree_name):
         tree_name.selection_remove(tree_name.selection())
-
-def run_func():
-    window = Tk()
-    PayDash(window)
-    window.mainloop()
-        
-if __name__ == '__main__':
-    run_func()

@@ -22,30 +22,45 @@ class CheckInvDash:
 
         # Defining Variable 
         self.var_search_invoice_num = IntVar()
-        # Prod List Dashboard Text 
-        cus_list_text = Label(window, text='Check Invoice Dashboard',font=("Roboto Regular", 16), fg=self.main_white_color,bg=self.main_black_color)
+        # Check Invoice Dashboard Text 
+        cus_list_text = Label(self.window, text='Check Invoice Dashboard',font=("Roboto Regular", 16), fg=self.main_white_color,bg=self.main_black_color)
         cus_list_text.place(x=0,y=0)
 
-        search_txt_label = Label(window, text='Invoice Number:',font=("Roboto Regular", 16), fg=self.main_white_color,bg=self.main_black_color)
-        search_txt_label.place(x=60,y=60)
+        self.frame_for_inv = Frame(self.window, bd=2, relief=RIDGE)
+        self.frame_for_inv.place(x=10, y=40,relwidth=1, height=290)
 
-        self.search_txt_entry = Entry(relief=SUNKEN, bg="white", fg="#6b6a69",
+        search_txt_label = Label(self.frame_for_inv, text='Invoice Number:',font=("Roboto Regular", 16), fg=self.main_white_color,bg=self.main_black_color)
+        search_txt_label.place(x=60,y=20)
+
+        self.search_txt_entry = Entry(self.frame_for_inv, relief=SUNKEN, bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 14),
                                     textvariable=self.var_search_invoice_num
                                     )
-        self.search_txt_entry.place(x=60,y=100, width=280, height=40)
+        self.search_txt_entry.place(x=60,y=60, width=280, height=40)
 
-        self.search_cus_btn = Button(text='Search Bill',
+        self.search_cus_btn = Button(self.frame_for_inv, text='Search Bill',
                                 cursor='hand2',
-                                command=self.search_invoice_func,                
-                                 font=('Roboto Regular', 14, "bold"))
-        self.search_cus_btn.place(x=60,y=160, width=280 ,height=40)
-
-        self.search_cus_btn = Button(text='Clear',
-                                cursor='hand2',
-                                command=self.clear_invoice_func,              
+                                command=self.search_invoice_func,
+                                fg=self.main_white_color,              
+                                bg=self.main_black_color,                
                                 font=('Roboto Regular', 14, "bold"))
-        self.search_cus_btn.place(x=60,y=220, width=280, height=40)
+        self.search_cus_btn.place(x=60,y=120, width=280 ,height=40)
+
+        self.search_cus_btn = Button(self.frame_for_inv, text='Clear',
+                                cursor='hand2',
+                                command=self.clear_invoice_func,
+                                fg=self.main_white_color,              
+                                bg=self.main_black_color,
+                                font=('Roboto Regular', 14, "normal"))
+        self.search_cus_btn.place(x=60,y=180, width=280, height=40)
+
+        self.dash_btn = Button(self.frame_for_inv, text='Dashboard',
+                                cursor='hand2',
+                                command=self.go_to_dashboard_func,
+                                fg=self.main_white_color,              
+                                bg=self.main_black_color,
+                                font=('Roboto Regular', 14, "normal"))
+        self.dash_btn.place(x=60,y=240, width=280, height=40)
         
     def search_invoice_func(self):
         con = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASS)
@@ -73,12 +88,3 @@ class CheckInvDash:
 
     def go_to_dashboard_func(self):
         self.window.destroy()
-
-
-def run_func():
-    window = Tk()
-    CheckInvDash(window)
-    window.mainloop()
-        
-if __name__ == '__main__':
-    run_func()

@@ -2,7 +2,8 @@ from tkinter import *
 import tkinter.ttk as ttk
 from tkinter import messagebox
 import psycopg2
-from datetime import datetime
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 
 DB_HOST = 'localhost'
 DB_NAME = 'mobiledb'
@@ -53,7 +54,7 @@ class BillCheckDash:
         self.scrollx = Scrollbar(self.frame_for_tree, orient=HORIZONTAL)
         #Treeview
         self.bill_list_tree = ttk.Treeview(self.frame_for_tree,
-                columns=("id", "cus_id", "pr_id","pr_name", "paid", "date", "pur_mode","rate","quantity","t_amount"), show='headings', yscrollcommand=self.scrolly.set, xscrollcommand=self.scrollx.set )
+                columns=("id", "cus_id", "pr_id","pr_name", "paid", "date", "pur_mode","rate","quantity","t_amount","inv_id"), show='headings', yscrollcommand=self.scrolly.set, xscrollcommand=self.scrollx.set )
 
         self.bill_list_tree['selectmode'] = 'browse'
 
@@ -73,6 +74,7 @@ class BillCheckDash:
         self.bill_list_tree.heading('rate', text="Rate")
         self.bill_list_tree.heading('quantity', text="Quantity")
         self.bill_list_tree.heading('t_amount', text="T.Amount")
+        self.bill_list_tree.heading('inv_id', text="Invoice No")
         
         
         self.bill_list_tree.pack(fill=BOTH, expand=1)
@@ -87,9 +89,10 @@ class BillCheckDash:
         self.bill_list_tree.column('rate', width=100)
         self.bill_list_tree.column('quantity', width=50)
         self.bill_list_tree.column('t_amount', width=100)
+        self.bill_list_tree.column('inv_id', width=20)
         
 
-        # self.bill_list_tree.bind("<ButtonRelease-1>", self.get_cus_data_fun)
+        self.bill_list_tree.bind("<ButtonRelease-1>", self.get_bill_data)
         self.show_bill_func()
 
         # Invoice DETAILS FORM FRAME 
@@ -110,13 +113,13 @@ class BillCheckDash:
         self.search_cus_btn = Button(self.bill_details_frame, text='Search Bill',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.search_invoice_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "bold"))
         self.search_cus_btn.grid(row=0,column=2,padx=20,pady=10)
 
         self.search_cus_btn = Button(self.bill_details_frame, text='Clear',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.clear_invoice_func,              
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.search_cus_btn.grid(row=0,column=3,padx=0,pady=10)
 
         # Bill Filters FORM FRAME 
@@ -126,7 +129,7 @@ class BillCheckDash:
         self.search_prod_select = ttk.Combobox(self.bill_filters_frame,
                                 values=("Select By","Product Name", "IMEI","Cus Name","Purchase Mode"),
                                 state='readonly', justify=CENTER,
-                                font=('goudy old style', 14),
+                                font=('Roboto Regular', 14, "normal"),
                                 textvariable=self.var_search_bill_by
                                 )
         self.search_prod_select.grid(row=0, column=0,padx=20,pady=10)
@@ -142,76 +145,82 @@ class BillCheckDash:
         self.search_cus_btn = Button(self.bill_filters_frame, text='Search Bill',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.search_bill_filter_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
-        self.search_cus_btn.grid(row=0,column=2,padx=20,pady=10)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "bold"))
+        self.search_cus_btn.grid(row=0,column=2,padx=10,pady=10)
 
         self.search_cus_btn = Button(self.bill_filters_frame, text='Clear',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.clear_bill_filter_func,              
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.search_cus_btn.grid(row=0,column=3,padx=0,pady=10)
 
         # Invoice DETAILS FORM FRAME 
         self.date_filter_frame = LabelFrame(self.window,bd=2,text='Filter Date in Bill Details', relief=FLAT)        
-        self.date_filter_frame.place(x=40, y=440, width=580, height=90)
+        self.date_filter_frame.place(x=40, y=440, width=780, height=90)
 
         from_date_label = Label(self.date_filter_frame, text='From: ',bg="white", fg="#4f4e4d",
                                     font=("yu gothic ui", 13, "bold"))
 
-        from_date_label.place(x=20, y=20,width=60, height=30)
+        from_date_label.place(x=20, y=10,width=60, height=30)
 
         self.from_date_search = Entry(self.date_filter_frame,relief=SUNKEN,
                                     bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12),
                                     textvariable=self.var_from_date
                                     )
-        self.from_date_search.place(x=100, y=20,width=120, height=30)
+        self.from_date_search.place(x=100, y=10,width=120, height=30)
 
         to_date_label = Label(self.date_filter_frame, text='To: ',bg="white", fg="#4f4e4d",
                                     font=("yu gothic ui", 13, "bold"))
 
-        to_date_label.place(x=240, y=20,width=60, height=30)
+        to_date_label.place(x=240, y=10,width=60, height=30)
 
         self.to_date_search = Entry(self.date_filter_frame,relief=SUNKEN,
                                     bg="white", fg="#6b6a69",
                                     font=("yu gothic ui semibold", 12),
                                     textvariable=self.var_to_date
                                     )
-        self.to_date_search.place(x=320, y=20,width=120, height=30)
+        self.to_date_search.place(x=320, y=10,width=120, height=30)
 
         self.from_to_search_btn = Button(self.date_filter_frame, text='Search',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.search_from_to_bill,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
-        self.from_to_search_btn.place(x=460, y=15,width=90, height=40)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "bold"))
+        self.from_to_search_btn.place(x=460, y=5,width=120, height=40)
+
+        self.clear_from_to_search_btn = Button(self.date_filter_frame, text='Clear',
+                                cursor='hand2',fg=self.main_white_color,
+                                command=self.clear_search_from_to_bill,                
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
+        self.clear_from_to_search_btn.place(x=600, y=5,width=100, height=40)
+
+        help_date_label = Label(self.date_filter_frame, text='Note:- Date format should be MM/DD/YYYY or YYYY-DD-MM ', fg="#4f4e4d",
+                                    font=("yu gothic ui", 11, "bold"))
+
+        help_date_label.place(x=0, y=50,relwidth=1, height=20)
 
         # Button Bill FRAME 
         self.button_bill_frame = LabelFrame(self.window,bd=2,text='Bill Buttons', relief=FLAT)        
-        self.button_bill_frame.place(x=640, y=440, width=680, height=90)
+        self.button_bill_frame.place(x=840, y=440, width=480, height=90)
 
         self.show_all_bill_btn = Button(self.button_bill_frame, text='Show All',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.show_bill_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
-        self.show_all_bill_btn.grid(row=0,column=0,padx=20,pady=10)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
+        self.show_all_bill_btn.place(x=10, y=15,width=120, height=40)
 
-        self.last_day_profit_btn = Button(self.button_bill_frame, text='Last Day Profit',
+        self.last_day_profit_btn = Button(self.button_bill_frame, text='Last Day Sale',
                                 cursor='hand2',fg=self.main_white_color,
-                                # command=self.search_invoice_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
-        self.last_day_profit_btn.grid(row=0,column=1,padx=20,pady=10)
+                                command=self.last_day_sale_func,                
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
+        self.last_day_profit_btn.place(x=150, y=15,width=160, height=40)
 
-        self.last_mnth_profit_btn = Button(self.button_bill_frame, text='Last Month Profit',
-                                cursor='hand2',fg=self.main_white_color,
-                                # command=self.search_invoice_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
-        self.last_mnth_profit_btn.grid(row=0,column=2,padx=20,pady=10)
 
-        self.all_profit_btn = Button(self.button_bill_frame, text='All Profit',
+        self.today_sale_btn = Button(self.button_bill_frame, text='Today Sale',
                                 cursor='hand2',fg=self.main_white_color,
-                                command=self.total_profit_func,              
-                                bg=self.main_black_color, font=('goudy old style', 14))
-        self.all_profit_btn.grid(row=0,column=3,padx=0,pady=10)
+                                command=self.today_sale_func,              
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
+        self.today_sale_btn.place(x=330, y=15,width=120, height=40)
 
         # Profit and Loss FORM FRAME 
         self.profit_loss_frame = LabelFrame(self.window,bd=2,text='Profit Loss Frame', relief=FLAT)        
@@ -275,8 +284,12 @@ class BillCheckDash:
                     pay_det_row[1],
                     pr_det_row[4],
                     row[5],
-                    pr_det_row[4] * row[5]
+                    pr_det_row[4] * row[5],
+                    row[7]
                     ))
+            self.total_sale_amount_func()
+            self.tot_sale_pr_am_func()
+            self.tot_loss_pur_mode_func()
 
         except Exception as ex:
             messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
@@ -297,6 +310,10 @@ class BillCheckDash:
                 all_rows = cur.fetchall()
                 if all_rows!=[]:
                     self.bill_list_tree.delete(*self.bill_list_tree.get_children())
+                    # Also Changing Profit Loss And Total Sale 
+                    tot_sale_pr_am = 0
+                    total_sale_amount = 0
+                    loss_other_pur_mode = 0
                     for row in all_rows:
                         cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
                         cs_det_row = cur.fetchone()
@@ -314,8 +331,25 @@ class BillCheckDash:
                             pay_det_row[1],
                             pr_det_row[4],
                             row[5],
-                            pr_det_row[4] * row[5]
+                            pr_det_row[4] * row[5],
+                            row[7]
                             ))
+                        # Total Sale Count 
+                        total_sale = pr_det_row[4] * row[5]
+                        total_sale_amount += total_sale
+                        # Sale Profit Count 
+                        prof_amount = pr_det_row[4] - pr_det_row[3]
+                        sale_profit = row[5]*prof_amount
+                        tot_sale_pr_am += sale_profit
+                        # Loss Count 
+                        loss_amount = float(pr_det_row[4]*(pay_det_row[2]/100))
+                        tot_loss_amount=row[5]*loss_amount
+                        loss_other_pur_mode += tot_loss_amount
+                    round_up_two_tot_am = round(loss_other_pur_mode, 2)
+                    self.var_tot_loss_pur_mode.set(round_up_two_tot_am)
+                    self.var_tot_sale_pr.set((tot_sale_pr_am-self.var_tot_loss_pur_mode.get()))
+                    self.var_tot_sale_am.set(total_sale_amount)
+                
             elif self.var_to_date.get()=='':
                 cur.execute('SELECT * FROM bill ORDER BY id DESC LIMIT 1;')
                 last_row = cur.fetchone()
@@ -325,6 +359,10 @@ class BillCheckDash:
                 ))
                 all_rows = cur.fetchall()
                 if all_rows!=[]:
+                    # Also Changing Profit Loss And Total Sale 
+                    tot_sale_pr_am = 0
+                    total_sale_amount = 0
+                    loss_other_pur_mode = 0
                     self.bill_list_tree.delete(*self.bill_list_tree.get_children())
                     for row in all_rows:
                         cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
@@ -343,8 +381,25 @@ class BillCheckDash:
                             pay_det_row[1],
                             pr_det_row[4],
                             row[5],
-                            pr_det_row[4] * row[5]
+                            pr_det_row[4] * row[5],
+                            row[7]
                             ))
+                        # Total Sale Count 
+                        total_sale = pr_det_row[4] * row[5]
+                        total_sale_amount += total_sale
+                        # Sale Profit Count 
+                        prof_amount = pr_det_row[4] - pr_det_row[3]
+                        sale_profit = row[5]*prof_amount
+                        tot_sale_pr_am += sale_profit
+                        # Loss Count 
+                        loss_amount = float(pr_det_row[4]*(pay_det_row[2]/100))
+                        tot_loss_amount=row[5]*loss_amount
+                        loss_other_pur_mode += tot_loss_amount
+                    round_up_two_tot_am = round(loss_other_pur_mode, 2)
+                    self.var_tot_loss_pur_mode.set(round_up_two_tot_am)
+                    self.var_tot_sale_pr.set((tot_sale_pr_am-self.var_tot_loss_pur_mode.get()))
+                    self.var_tot_sale_am.set(total_sale_amount)
+
                 else:
                     messagebox.showerror('No Data Exist', f'No data in between {self.var_from_date.get()} till date', parent=self.window)
             else:
@@ -354,6 +409,10 @@ class BillCheckDash:
                 ))
                 all_rows = cur.fetchall()
                 if all_rows!=[]:
+                    # Also Changing Profit Loss And Total Sale 
+                    tot_sale_pr_am = 0
+                    total_sale_amount = 0
+                    loss_other_pur_mode = 0
                     self.bill_list_tree.delete(*self.bill_list_tree.get_children())
                     for row in all_rows:
                         cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
@@ -372,8 +431,24 @@ class BillCheckDash:
                             pay_det_row[1],
                             pr_det_row[4],
                             row[5],
-                            pr_det_row[4] * row[5]
+                            pr_det_row[4] * row[5],
+                            row[7]
                             ))
+                        # Total Sale Count 
+                        total_sale = pr_det_row[4] * row[5]
+                        total_sale_amount += total_sale
+                        # Sale Profit Count 
+                        prof_amount = pr_det_row[4] - pr_det_row[3]
+                        sale_profit = row[5]*prof_amount
+                        tot_sale_pr_am += sale_profit
+                        # Loss Count 
+                        loss_amount = float(pr_det_row[4]*(pay_det_row[2]/100))
+                        tot_loss_amount=row[5]*loss_amount
+                        loss_other_pur_mode += tot_loss_amount
+                    round_up_two_tot_am = round(loss_other_pur_mode, 2)
+                    self.var_tot_loss_pur_mode.set(round_up_two_tot_am)
+                    self.var_tot_sale_pr.set((tot_sale_pr_am-self.var_tot_loss_pur_mode.get()))
+                    self.var_tot_sale_am.set(total_sale_amount)
                 else:
                     messagebox.showerror('No Data Exist', f'No data in between starting date and {self.var_to_date.get()}', parent=self.window)
             
@@ -497,7 +572,7 @@ class BillCheckDash:
                     messagebox.showinfo('No Matching Results', f'Nothing Matched With Customer Name: {self.var_search_bill_text.get()}.', parent=self.window)
                     self.show_bill_func()
         except Exception as ex:
-            messagebox.showerror('Error', f'Error due to {str(ex)}')
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
 
     def clear_bill_filter_func(self):
         self.var_search_bill_by.set('Select By')
@@ -554,10 +629,60 @@ class BillCheckDash:
             self.var_tot_loss_pur_mode.set(round_up_two_tot_am)
         except Exception as ex:
             messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
-
-    def total_profit_func(self):
-        # current_date = datetime.now().strftime('%x')
-        pass
+    
+    def last_day_sale_func(self):
+        con = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASS)
+        cur = con.cursor()
+        try:
+            tot_sale_pr_am = 0
+            total_sale_amount = 0
+            loss_other_pur_mode = 0
+            crnt_date = datetime.now()
+            prev_date = crnt_date + relativedelta(days=-1)
+            prev_date_date = prev_date.strftime('%x')
+            cur.execute('SELECT * FROM bill WHERE paid=%s AND date=%s', ('yes',prev_date_date))
+            all_paid_bill = cur.fetchall()
+            if all_paid_bill!=[]:
+                self.bill_list_tree.delete(*self.bill_list_tree.get_children())
+                for row in all_paid_bill:
+                    cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
+                    cs_det_row = cur.fetchone()
+                    cur.execute('SELECT * FROM paymode WHERE id=%s', (row[6], ))
+                    pur_mode_row=cur.fetchone()
+                    cur.execute('SELECT * FROM inventory WHERE id=%s', (row[2], ))
+                    prod_row = cur.fetchone()
+                    self.bill_list_tree.insert('', END, values=(
+                        row[0],
+                        cs_det_row[1],
+                        row[2],
+                        prod_row[1],
+                        row[3],
+                        row[4],
+                        pur_mode_row[1],
+                        prod_row[4],
+                        row[5],
+                        prod_row[4] * row[5],
+                        row[7]
+                        ))
+                    # Total Sale Count 
+                    total_sale = prod_row[4] * row[5]
+                    total_sale_amount += total_sale
+                    # Sale Profit Count 
+                    prof_amount = prod_row[4] - prod_row[3]
+                    sale_profit = row[5]*prof_amount
+                    tot_sale_pr_am += sale_profit
+                    # Loss Count 
+                    loss_amount = float(prod_row[4]*(pur_mode_row[2]/100))
+                    tot_loss_amount=row[5]*loss_amount
+                    loss_other_pur_mode += tot_loss_amount
+                round_up_two_tot_am = round(loss_other_pur_mode, 2)
+                self.var_tot_loss_pur_mode.set(round_up_two_tot_am)
+                self.var_tot_sale_pr.set((tot_sale_pr_am-self.var_tot_loss_pur_mode.get()))
+                self.var_tot_sale_am.set(total_sale_amount)
+            else:
+                messagebox.showerror('No sale!', 'No sales yesterday.', parent=self.window)
+        except Exception as ex:
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
 
     def search_invoice_func(self):
         con = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASS)
@@ -580,13 +705,67 @@ class BillCheckDash:
         except Exception as ex:
             messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
 
+    def today_sale_func(self):
+        con = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASS)
+        cur = con.cursor()
+        try:
+            tot_sale_pr_am = 0
+            total_sale_amount = 0
+            loss_other_pur_mode = 0
+            crnt_date = datetime.now().strftime('%x')
+            cur.execute('SELECT * FROM bill WHERE paid=%s AND date=%s', ('yes',crnt_date))
+            all_paid_bill = cur.fetchall()
+            if all_paid_bill!=[]:
+                self.bill_list_tree.delete(*self.bill_list_tree.get_children())
+                for row in all_paid_bill:
+                    cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
+                    cs_det_row = cur.fetchone()
+                    cur.execute('SELECT * FROM paymode WHERE id=%s', (row[6], ))
+                    pur_mode_row=cur.fetchone()
+                    cur.execute('SELECT * FROM inventory WHERE id=%s', (row[2], ))
+                    prod_row = cur.fetchone()
+                    self.bill_list_tree.insert('', END, values=(
+                        row[0],
+                        cs_det_row[1],
+                        row[2],
+                        prod_row[1],
+                        row[3],
+                        row[4],
+                        pur_mode_row[1],
+                        prod_row[4],
+                        row[5],
+                        prod_row[4] * row[5],
+                        row[7]
+                        ))
+                    # Total Sale Count 
+                    total_sale = prod_row[4] * row[5]
+                    total_sale_amount += total_sale
+                    # Sale Profit Count 
+                    prof_amount = prod_row[4] - prod_row[3]
+                    sale_profit = row[5]*prof_amount
+                    tot_sale_pr_am += sale_profit
+                    # Loss Count 
+                    loss_amount = float(prod_row[4]*(pur_mode_row[2]/100))
+                    tot_loss_amount=row[5]*loss_amount
+                    loss_other_pur_mode += tot_loss_amount
+                round_up_two_tot_am = round(loss_other_pur_mode, 2)
+                self.var_tot_loss_pur_mode.set(round_up_two_tot_am)
+                self.var_tot_sale_pr.set((tot_sale_pr_am-self.var_tot_loss_pur_mode.get()))
+                self.var_tot_sale_am.set(total_sale_amount)  
+            else:
+                messagebox.showerror('No sale!', 'No sales today.', parent=self.window)
+        except Exception as ex:
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+
+    def get_bill_data(self, ev):
+        f = self.bill_list_tree.focus()
+        content = (self.bill_list_tree.item(f))
+        row = content['values']
+        self.var_search_invoice_num.set(row[10])
+
     def clear_invoice_func(self):
         self.var_search_invoice_num.set(0)
 
-def run_func():
-    window = Tk()
-    BillCheckDash(window)
-    window.mainloop()
-        
-if __name__ == '__main__':
-    run_func()
+    def clear_search_from_to_bill(self):
+        self.var_from_date.set('')
+        self.var_to_date.set('')

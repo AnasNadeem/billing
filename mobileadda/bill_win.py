@@ -97,7 +97,7 @@ class BillDash:
         self.search_prod_select = ttk.Combobox(self.prod_frame,
                                 values=("Select By","Product Name", "IMEI","Stocks Availability"),
                                 state='readonly', justify=CENTER,
-                                font=('goudy old style', 14),
+                                font=('Roboto Regular', 14, "normal"),
                                 textvariable=self.var_search_prod_by
                                 )
         self.search_prod_select.grid(row=0, column=0,padx=40,pady=10)
@@ -113,13 +113,13 @@ class BillDash:
         self.search_prod_btn = Button(self.prod_frame, text='Search Product',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.show_search_prod_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
-        self.search_prod_btn.grid(row=0,column=2,padx=20,pady=10)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
+        self.search_prod_btn.grid(row=0,column=2,padx=10,pady=10)
 
         self.show_all_prod_btn = Button(self.prod_frame, text='Show All',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.show_all_prod_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.show_all_prod_btn.grid(row=0,column=3,padx=0,pady=10)
 
         #Treeview
@@ -217,21 +217,21 @@ class BillDash:
         self.add_to_cart_btn = Button(self.prod_frame, text='Add To Cart',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.add_to_cart_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.add_to_cart_btn.place(x=600, y=276, width=160)
 
         # Update Cart Btn 
         self.update_to_cart_btn = Button(self.prod_frame, text='Update Cart',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.update_cart_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.update_to_cart_btn.place(x=600, y=326, width=160)
 
         # Delete From Cart Btn 
         self.del_fr_cart_btn = Button(self.prod_frame, text='Delete From Cart',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.delete_cart_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.del_fr_cart_btn.place(x=600, y=376, width=160)
 
         # Customer DETAILS FORM FRAME 
@@ -254,8 +254,8 @@ class BillDash:
         self.search_cus_num_btn = Button(self.cus_add_frame, text='Search Customer',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.show_search_cus_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
-        self.search_cus_num_btn.grid(row=0,column=2,padx=10,pady=10)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
+        self.search_cus_num_btn.grid(row=0,column=2,padx=5,pady=10)
 
         # Customer ID Label
         cus_id_label_txt = Label(self.cus_add_frame, text='Customer Id: ',bg="white", fg="#4f4e4d",
@@ -315,13 +315,13 @@ class BillDash:
         clear_cus_det_button = Button(self.cus_add_frame, text='Clear',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.clear_cus_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14),width=10)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"),width=10)
         clear_cus_det_button.place(x=140,y=230)
 
         add_cus_button = Button(self.cus_add_frame, text='Add Customer',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.go_to_cus_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14),width=10)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"),width=10)
         add_cus_button.place(x=280,y=230, width=140)
 
 
@@ -332,34 +332,34 @@ class BillDash:
         self.total_button_button = Button(self.buttons_lots_buttons, text='Total Price',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.total_price_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14),width=8)
-        self.total_button_button.grid(row=0, column=0, padx=10, pady=10)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"),width=8)
+        self.total_button_button.place(x=20,y=10, width=120)
 
         self.total_button_button = Button(self.buttons_lots_buttons, text='Generate Bill',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.generate_bill_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14),width=12)
-        self.total_button_button.grid(row=0, column=1, padx=10, pady=10)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"),width=12)
+        self.total_button_button.place(x=180,y=10, width=160)
 
         self.total_button_button = Button(self.buttons_lots_buttons, text='Print',
                                 cursor='hand2',fg=self.main_white_color,
-                                # command=self.print_bill_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14),width=8)
-        self.total_button_button.grid(row=0, column=2, padx=10, pady=10)
+                                command=self.print_bill_func,                
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"),width=8)
+        self.total_button_button.place(x=380,y=10, width=120)
 
         self.pur_mode_select = ttk.Combobox(self.buttons_lots_buttons,
                                 state='readonly', justify=CENTER,
-                                font=('goudy old style', 14),
+                                font=('Roboto Regular', 14, "normal"),
                                 textvariable=self.var_pur_mode
                                 )
         self.add_pur_mode_combobox()
         self.pur_mode_select.current(0)
-        self.pur_mode_select.grid(row=1, column=0, padx=20, pady=10)
+        self.pur_mode_select.place(x=20,y=70, width=200)
         self.total_button_button = Button(self.buttons_lots_buttons, text='Clear All',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.clear_all_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14),width=8)
-        self.total_button_button.grid(row=1, column=1, padx=20, pady=10)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"),width=8)
+        self.total_button_button.place(x=260,y=60, width=120)
 
         # CART Frame
         self.cart_frame = Frame(self.window, bd=2, relief=FLAT)
@@ -484,7 +484,7 @@ class BillDash:
                     messagebox.showinfo('No Matching Results', f'Nothing Matched With Stocks availability of {self.var_search_prd_text.get()}.', parent=self.window)
                     self.show_all_prod_func()
         except Exception as ex:
-            messagebox.showerror('Error', f'Error due to {str(ex)}')
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
         
     def clear_prod_fun(self):
         self.var_search_prod_by.set('Search By')
@@ -501,7 +501,7 @@ class BillDash:
         cur = con.cursor()
         try:
             if self.var_search_cus_text.get()=="":
-                messagebox.showerror('Error', f'Please enter Mobile number')
+                messagebox.showerror('Error', f'Please enter Mobile number', parent=self.window)
             else:
                 cur.execute('SELECT * FROM customer WHERE num= %s', (self.var_search_cus_text.get(),))
                 rows_db = cur.fetchall()
@@ -512,9 +512,9 @@ class BillDash:
                         self.var_cus_num.set(data[2])
                         self.var_cus_add.set(data[3])
                 else:
-                    messagebox.showerror('Nothing Found', f'No Customers Found. Check the number')
+                    messagebox.showerror('Nothing Found', f'No Customers Found. Check the number', parent=self.window)
         except Exception as ex:
-            messagebox.showerror('Error', f'Error due to {str(ex)}')
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
 
     def clear_cus_func(self):
         self.var_cus_id.set(0)
@@ -799,6 +799,9 @@ class BillDash:
                 ))
                 bill_row_details = cur.fetchone()
                 invoice_id = bill_row_details[0]
+                for bill_id in all_bill_id:
+                    cur.execute("UPDATE bill SET inv_id=%s WHERE id=%s",(invoice_id, bill_id))
+                    con.commit()
                 self.create_inv(
                     file_name,
                     self.var_cus_name.get(),
@@ -816,6 +819,16 @@ class BillDash:
     
     # Creating PDF CODE 
     def create_inv(self,file_name, cus_name, cus_num, cus_add,invoice_id,crnt_date, prd_list,total_price):
+        # Checking if the folder exists
+        import os
+        crnt_path = os.getcwd()
+        bill_fol = 'bill_invoice'
+        full_path = os.path.join(crnt_path, bill_fol)
+        check_if_exists = os.path.exists(full_path)
+        if check_if_exists==False:
+            os.mkdir(bill_fol)
+
+        # Main Pdf Code started
         my_canvas = canvas.Canvas(f'{file_name}.pdf',pagesize=A4)
         styles = getSampleStyleSheet()
         
@@ -952,13 +965,20 @@ class BillDash:
         self.add_to_cart_tree.delete(*self.add_to_cart_tree.get_children())
         self.var_pur_mode.set('Purchase Mode')
 
+    def print_bill_func(self):
+        con = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASS)
+        cur = con.cursor()
+        try:
+            cur.execute('SELECT * FROM billdetails ORDER BY id DESC LIMIT 1;')
+            latest_bill = cur.fetchone()
+            import os
+            import webbrowser
+            cwd = f'{os.getcwd()}'
+            pdf = f'{latest_bill[4]}.pdf'
+            full_path = os.path.join(cwd, pdf)
+            webbrowser.open_new(f'file://{full_path}')
+        except Exception as ex:
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+
     def deselect_tree_item(self, tree_name):
         tree_name.selection_remove(tree_name.selection())
-
-def run_func():
-    window = Tk()
-    BillDash(window)
-    window.mainloop()
-        
-if __name__ == '__main__':
-    run_func()

@@ -1,114 +1,154 @@
 from tkinter import *
-# from PIL import Image, ImageTk
+from PIL import Image, ImageTk
 from all_prod_list import AllProdDash
-from transaction_list import TransDash
+from all_bill_list import BillCheckDash
+from bill_win import BillDash
+from check_inv import CheckInvDash
+from cus_list import CusDash
+from pay_mode import PayDash
 from user_list import UserListDash
-# from about_soft import AboutDash
-from main_win import BillDash
-# import psycopg2
-# from tkinter import messagebox
 
-# DB_HOST = 'localhost'
-# DB_NAME = 'postgres'
-# DB_USER = 'postgres'
-# DB_PASS = 'Anas@123Great'
+DB_HOST = 'localhost'
+DB_NAME = 'mobiledb'
+DB_USER = 'postgres'
+DB_PASS = 'Anas@123Great'
 
 class AdminDash:
     def __init__(self, window):
         self.window = window
-        # self.username = username
         self.window.geometry("1366x720+70+50")
         self.main_black_color = '#0f0f0f'
-        self.main_white_color = '#f8f8f8'
+        self.main_white_color = '#ffffff'
         self.window['bg'] = self.main_black_color
         # self.window.iconbitmap("")
         self.window.resizable(False, False)
 
         # Login Dashboard Text 
-        # if self.check_admin_user():
-        self.window.title("Admin Dashboard")
-        admin_dash_text = Label(window, text='Admin Dashboard',font=("Roboto Regular", 36), fg=self.main_white_color,bg=self.main_black_color)
+        self.window.title("Main Dashboard")
+        admin_dash_text = Label(window, text='Main Dashboard',font=("Roboto Regular", 36),
+                            fg=self.main_white_color,bg=self.main_black_color)
         admin_dash_text.place(x=0,y=0)
-        # else:
-            # self.window.title("User Dashboard")
-            # admin_dash_text = Label(window, text='User Dashboard',font=("Roboto Regular", 36), fg=self.main_white_color,bg=self.main_black_color)
-            # admin_dash_text.place(x=0,y=0)
-        # Main Window Btn 
+        # # Main Window Btn 
         main_win_btn = Button(self.window, text='Main Window',
                                 cursor='hand2',fg=self.main_black_color,
-                                command=self.main_win_fun,                   
-                                bg='white', font=('Roboto Regular', 14, "bold"),width=14)
-        main_win_btn.place(x=1160, y=16)
+                                command=self.bill_win_fun,                   
+                                bg='white', font=('Roboto Regular', 16, "bold"),width=16)
+        main_win_btn.place(x=1040, y=16)
 
         # Inventory  BUTTON
-        self.inventory_btn = Button(window, text='All Product List',
-                                        cursor='hand2',fg=self.main_black_color,
-                                        # command=self.invent_new_win,
-                                        bg='white', font=('Roboto Regular', 14, "bold"),width=14)
-        self.inventory_btn.place(x=490, y=180)
+        self.prod_image_open = Image.open('images/cartim.png')
+        self.prod_image_open = self.prod_image_open.resize((300, 250), Image.ANTIALIAS)
+        self.prod_cart_img = ImageTk.PhotoImage(self.prod_image_open)
+
+        self.prod_cart_btn = Button(window, image=self.prod_cart_img,
+                                            cursor='hand2',command=self.all_prod_list,
+                                            borderwidth=0,border=0,bg=self.main_black_color)
+        self.prod_cart_btn.image = self.prod_cart_img
+        self.prod_cart_btn.place(x=80, y=80)
+        prod_dash_text = Label(window, text='Product List',
+                            font=("Roboto Regular", 28),
+                            fg=self.main_black_color,bg=self.main_white_color)
+        prod_dash_text.place(x=120,y=270)
 
         # Add Payment BUTTON
-        self.add_payment_btn = Button(window, text='Add Payment List',
-                                        cursor='hand2',fg=self.main_black_color,
-                                        # command=self.invent_new_win,
-                                        bg='white', font=('Roboto Regular', 14, "bold"),width=14)
-        self.add_payment_btn.place(x=490, y=240)
+        self.payment_image_open = Image.open('images/paymode.png')
+        self.payment_image_open = self.payment_image_open.resize((300, 250), Image.ANTIALIAS)
+        self.payment_cart_img = ImageTk.PhotoImage(self.payment_image_open)
+
+        self.payment_cart_btn = Button(window, image=self.payment_cart_img,
+                                            cursor='hand2',command=self.all_pay_list,
+                                            borderwidth=0,border=0,bg=self.main_black_color)
+        self.payment_cart_btn.image = self.payment_cart_img
+        self.payment_cart_btn.place(x=520, y=80)
+        payment_dash_text = Label(window, text='Payment List',
+                            font=("Roboto Regular", 28),
+                            fg=self.main_black_color,bg=self.main_white_color)
+        payment_dash_text.place(x=560,y=270)
 
         # Users aka Employee  BUTTON
-        self.employee_btn = Button(window, text='User List',
-                                    cursor='hand2',fg=self.main_black_color,
-                                    # command=self.user_new_win,
-                                    bg='white', font=('Roboto Regular', 14, "bold"),width=14)
-        self.employee_btn.place(x=490, y=300)
+        self.user_image_open = Image.open('images/customerbox.png')
+        self.user_image_open = self.user_image_open.resize((300, 250), Image.ANTIALIAS)
+        self.user_cart_img = ImageTk.PhotoImage(self.user_image_open)
+
+        self.user_cart_btn = Button(window, image=self.user_cart_img,
+                                            cursor='hand2',command=self.all_user_list,
+                                            borderwidth=0,border=0,bg=self.main_black_color)
+        self.user_cart_btn.image = self.user_cart_img
+        self.user_cart_btn.place(x=960, y=80)
+        user_dash_text = Label(window, text='User List',
+                            font=("Roboto Regular", 28),
+                            fg=self.main_black_color,bg=self.main_white_color)
+        user_dash_text.place(x=1040,y=270)
 
         # Bill BUTTON
-        self.bill_btn = Button(window, text='Transactions List',
-                                    cursor='hand2',fg=self.main_black_color,
-                                    # command=self.transaction_new_win,
-                                    bg='white', font=('Roboto Regular', 14, "bold"),width=14)
-        self.bill_btn.place(x=490, y=360)
+        self.bill_image_open = Image.open('images/trnsbox.jpg')
+        self.bill_image_open = self.bill_image_open.resize((300, 250), Image.ANTIALIAS)
+        self.bill_cart_img = ImageTk.PhotoImage(self.bill_image_open)
 
-        # About  BUTTON
-        self.about_btn = Button(window, text='About',
-                                    cursor='hand2',fg=self.main_black_color,
-                                    # command=self.about_soft_win,
-                                    bg='white', font=('Roboto Regular', 14, "bold"),width=14)
-        self.about_btn.place(x=490, y=420)
-            
-    def invent_new_win(self):
-        self.newWindow = Toplevel(self.window)
-        self.app = AllProdDash(self.newWindow)
-
-    def transaction_new_win(self):
-        self.newWindow = Toplevel(self.window)
-        self.app = TransDash(self.newWindow)
-
-    def user_new_win(self):
-        self.newWindow = Toplevel(self.window)
-        self.app = UserListDash(self.newWindow)
+        self.bill_cart_btn = Button(window, image=self.bill_cart_img,
+                                            cursor='hand2',command=self.all_bill_list,
+                                            borderwidth=0,border=0,bg=self.main_black_color)
+        self.bill_cart_btn.image = self.bill_cart_img
+        self.bill_cart_btn.place(x=80, y=400)
+        bill_dash_text = Label(window, text='Bill List',
+                            font=("Roboto Regular", 28),
+                            fg=self.main_black_color,bg=self.main_white_color)
+        bill_dash_text.place(x=160,y=590)
         
-    def main_win_fun(self):
+        # Customer  BUTTON
+        self.customer_image_open = Image.open('images/customerbox.png')
+        self.customer_image_open = self.customer_image_open.resize((300, 250), Image.ANTIALIAS)
+        self.customer_cart_img = ImageTk.PhotoImage(self.customer_image_open)
+
+        self.customer_cart_btn = Button(window, image=self.customer_cart_img,
+                                            cursor='hand2',command=self.all_cus_list,
+                                            borderwidth=0,border=0,bg=self.main_black_color)
+        self.customer_cart_btn.image = self.customer_cart_img
+        self.customer_cart_btn.place(x=520, y=400)
+        customer_text = Label(window, text='Customer List',
+                            font=("Roboto Regular", 28),
+                            fg=self.main_black_color,bg=self.main_white_color)
+        customer_text.place(x=560,y=590)
+        
+        # Check Invoice BUTTON
+        self.check_inv_image_open = Image.open('images/billicon.jpg')
+        self.check_inv_image_open = self.check_inv_image_open.resize((300, 250), Image.ANTIALIAS)
+        self.check_inv_cart_img = ImageTk.PhotoImage(self.check_inv_image_open)
+
+        self.check_inv_cart_btn = Button(window, image=self.check_inv_cart_img,
+                                            cursor='hand2',command=self.check_inv,
+                                            borderwidth=0,border=0,bg=self.main_black_color)
+        self.check_inv_cart_btn.image = self.check_inv_cart_img
+        self.check_inv_cart_btn.place(x=960, y=400)
+        check_inv_text = Label(window, text='Check Invoice',
+                            font=("Roboto Regular", 28),
+                            fg=self.main_black_color,bg=self.main_white_color)
+        check_inv_text.place(x=1000,y=590)
+             
+    def bill_win_fun(self):
         self.newWindow = Toplevel(self.window)
         self.app = BillDash(self.newWindow)
 
-    # def check_admin_user(self):
-    #     con = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASS)
-    #     cur = con.cursor()
-    #     try:
-    #         cur.execute("""SELECT * FROM users WHERE username=%s""", (self.username,))
-    #         row_db= cur.fetchone()
-    #         if row_db[2]=='Admin':
-    #             return True
-    #         else:
-    #             return False
+    def all_prod_list(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = AllProdDash(self.newWindow)
 
-    #     except Exception as ex:
-    #         messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
+    def all_pay_list(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = PayDash(self.newWindow)
 
-def run_func():
-    window = Tk()
-    AdminDash(window)
-    window.mainloop()
-        
-if __name__ == '__main__':
-    run_func()
+    def all_user_list(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = UserListDash(self.newWindow)
+
+    def all_bill_list(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = BillCheckDash(self.newWindow)
+
+    def all_cus_list(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = CusDash(self.newWindow)
+
+    def check_inv(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = CheckInvDash(self.newWindow)

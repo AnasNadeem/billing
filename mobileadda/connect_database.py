@@ -16,15 +16,13 @@ def create_db():
     
     # cur.execute('DROP TABLE bill')
     # cur.execute('DROP TABLE billdetails')
-    # cur.execute("""CREATE TABLE IF NOT EXISTS users(
-    #     id SERIAL PRIMARY KEY,
-    #     username varchar(100) NOT NULL UNIQUE,
-    #     admin varchar(50) NOT NULL,
-    #     email varchar(100),
-    #     phone varchar(15),
-    #     location varchar(100) NOT NULL,
-    #     pass varchar NOT NULL
-    # );""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS users(
+        id SERIAL PRIMARY KEY,
+        username varchar(100) NOT NULL UNIQUE,
+        email varchar(100),
+        phone varchar(15),
+        pass varchar NOT NULL
+    );""")
     cur.execute("""CREATE TABLE IF NOT EXISTS inventory(
         id bigint NOT NULL PRIMARY KEY,
         pr_name varchar(250) NOT NULL,
@@ -56,6 +54,7 @@ def create_db():
         date DATE NOT NULL,
         quantity INTEGER NOT NULL,
         pur_mode INTEGER,
+        inv_id INTEGER,
         FOREIGN KEY (cus_id) REFERENCES customer(id),
         FOREIGN KEY (pr_id) REFERENCES inventory(id),
         FOREIGN KEY (pur_mode) REFERENCES paymode(id)

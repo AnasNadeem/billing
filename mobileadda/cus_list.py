@@ -109,31 +109,31 @@ class CusDash:
         self.save_prod_btn = Button(self.frame_for_cus, text='Save',
                             cursor='hand2',fg=self.main_white_color,
                             command=self.add_cus_func,                   
-                            bg=self.main_black_color, font=('goudy old style', 14))
+                            bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.save_prod_btn.place(x=450, y=220, width=120,height=40)
 
         self.update_prod_btn = Button(self.frame_for_cus, text='Update',
                                 cursor='hand2',fg=self.main_white_color,   
                                 command=self.upd_cus_func,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.update_prod_btn.place(x=600, y=220, width=120,height=40)
 
         self.del_prod_btn = Button(self.frame_for_cus, text='Delete',
                                 cursor='hand2',fg=self.main_white_color,  
                                 command=self.del_cus_func,                 
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.del_prod_btn.place(x=750, y=220, width=120,height=40)
 
         self.clear_prod_btn = Button(self.frame_for_cus, text='Clear',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.clear_cus_fun,                   
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.clear_prod_btn.place(x=900, y=220, width=120,height=40)
 
         self.dashboard_btn = Button(self.frame_for_cus, text='Dashboard',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.go_to_dashboard_func,                   
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.dashboard_btn.place(x=1050, y=220, width=120,height=40)
 
     def get_cus_data_fun(self, ev):
@@ -253,11 +253,3 @@ class CusDash:
 
     def deselect_tree_item(self, tree_name):
         tree_name.selection_remove(tree_name.selection())
-
-def run_func():
-    window = Tk()
-    CusDash(window)
-    window.mainloop()
-        
-if __name__ == '__main__':
-    run_func()

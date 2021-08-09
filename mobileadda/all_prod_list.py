@@ -51,7 +51,7 @@ class AllProdDash:
         self.search_combo_select = ttk.Combobox(self.search_frame,
                                 values=("Select By","Product Id","Product Name", "Vendor Name", "Vendor Number", "Stocks Availability"),
                                 state='readonly', justify=CENTER,
-                                font=('goudy old style', 14),
+                                font=('Roboto Regular', 14, "normal"),
                                 textvariable=self.var_search_by
                                 )
         # self.search_combo_select.place(x=10, y=10, width=180)
@@ -65,13 +65,13 @@ class AllProdDash:
         self.search_btn_search =Button(self.search_frame, text='Search',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.search_prod_fun,                   
-                                bg=self.main_black_color, font=('goudy old style', 14),width=12)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"),width=12)
         self.search_btn_search.grid(row=0, column=2,padx=20)
 
         self.show_all_btn_search =Button(self.search_frame, text='Show All',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.show_prod_fun,                   
-                                bg=self.main_black_color, font=('goudy old style', 14),width=12)
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"),width=12)
         self.show_all_btn_search.grid(row=0, column=3,padx=0)
 
         # Frame 
@@ -217,31 +217,31 @@ class AllProdDash:
         self.save_prod_btn = Button(self.frame_for_update, text='Save',
                             cursor='hand2',fg=self.main_white_color,
                             command=self.add_prod_fun,                   
-                            bg=self.main_black_color, font=('goudy old style', 14))
+                            bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.save_prod_btn.place(x=450, y=220, width=120,height=40)
 
         self.update_prod_btn = Button(self.frame_for_update, text='Update',
                                 cursor='hand2',fg=self.main_white_color,   
                                 command=self.upd_prod_fun,                
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.update_prod_btn.place(x=600, y=220, width=120,height=40)
 
         self.del_prod_btn = Button(self.frame_for_update, text='Delete',
                                 cursor='hand2',fg=self.main_white_color,  
                                 command=self.del_prod_fun,                 
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.del_prod_btn.place(x=750, y=220, width=120,height=40)
 
         self.clear_prod_btn = Button(self.frame_for_update, text='Clear',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.clear_prod_fun,                   
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.clear_prod_btn.place(x=900, y=220, width=120,height=40)
 
         self.dashboard_btn = Button(self.frame_for_update, text='Dashboard',
                                 cursor='hand2',fg=self.main_white_color,
                                 command=self.go_to_dashboard_func,                   
-                                bg=self.main_black_color, font=('goudy old style', 14))
+                                bg=self.main_black_color, font=('Roboto Regular', 14, "normal"))
         self.dashboard_btn.place(x=1050, y=220, width=120,height=40)
         
     def add_prod_fun(self):
@@ -451,18 +451,10 @@ class AllProdDash:
 
            
         except Exception as ex:
-            messagebox.showerror('Error', f'Error due to {str(ex)}')
+            messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
         
     def deselect_tree_item(self, tree_name):
         tree_name.selection_remove(tree_name.selection())
 
     def go_to_dashboard_func(self):
         self.window.destroy()
-
-def run_func():
-    window = Tk()
-    AllProdDash(window)
-    window.mainloop()
-        
-if __name__ == '__main__':
-    run_func()
