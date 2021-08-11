@@ -4,16 +4,11 @@ from tkinter import messagebox
 import psycopg2
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
-
-DB_HOST = 'localhost'
-DB_NAME = 'mobiledb'
-DB_USER = 'postgres'
-DB_PASS = 'Anas@123Great'
+from constants import *
 
 class BillCheckDash:
     def __init__(self, window):
         self.window = window
-        # self.username = username
         self.window.geometry("1366x720+70+50")
         self.main_black_color = '#0f0f0f'
         self.main_white_color = '#f8f8f8'
@@ -462,115 +457,135 @@ class BillCheckDash:
             if self.var_search_bill_by.get()=='Select By':
                 messagebox.showwarning('Please Select', "Select an option", parent=self.window)
             elif self.var_search_bill_by.get()=='Product Name':
-                cur.execute('SELECT * FROM inventory WHERE pr_name=%s', (self.var_search_bill_text.get(),))
+                cur.execute('SELECT * FROM inventory WHERE pr_name=%s', (self.var_search_bill_text.get().capitalize(),))
                 inven_row = cur.fetchone()
-                cur.execute('SELECT * FROM bill WHERE pr_id=%s',(inven_row[0],))
-                rows_db=cur.fetchall()
-                if rows_db!=[]:
-                    self.bill_list_tree.delete(*self.bill_list_tree.get_children())
-                    for row in rows_db:
-                        cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
-                        cs_det_row = cur.fetchone()
-                        cur.execute('SELECT * FROM paymode WHERE id=%s',(row[6], )) 
-                        pay_det_row = cur.fetchone()
-                        self.bill_list_tree.insert('', END, values=(
-                            row[0],
-                            cs_det_row[1],
-                            row[2],
-                            inven_row[1],
-                            row[3],
-                            row[4],
-                            pay_det_row[1],
-                            inven_row[4],
-                            row[5],
-                            inven_row[4] * row[5]
-                            ))
+                if inven_row is not None:
+                    cur.execute('SELECT * FROM bill WHERE pr_id=%s',(inven_row[0],))
+                    rows_db=cur.fetchall()
+                    if rows_db!=[]:
+                        self.bill_list_tree.delete(*self.bill_list_tree.get_children())
+                        for row in rows_db:
+                            cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
+                            cs_det_row = cur.fetchone()
+                            cur.execute('SELECT * FROM paymode WHERE id=%s',(row[6], )) 
+                            pay_det_row = cur.fetchone()
+                            self.bill_list_tree.insert('', END, values=(
+                                row[0],
+                                cs_det_row[1],
+                                row[2],
+                                inven_row[1],
+                                row[3],
+                                row[4],
+                                pay_det_row[1],
+                                inven_row[4],
+                                row[5],
+                                inven_row[4] * row[5],
+                                row[7]
+                                ))
+                    else:
+                        messagebox.showinfo('No Matching Results', f'Nothing Matched in Bill With Product Name: {self.var_search_bill_text.get()}.', parent=self.window)
+                        self.show_bill_func()
                 else:
-                    messagebox.showinfo('No Matching Results', f'Nothing Matched With Product Name: {self.var_search_bill_text.get()}.', parent=self.window)
-                    self.show_bill_func()
+                    messagebox.showinfo('No Matching Results', f'Not a Valid Product Name: {self.var_search_bill_text.get()}.', parent=self.window)
+
             elif self.var_search_bill_by.get()=='IMEI':
                 cur.execute('SELECT * FROM inventory WHERE id=%s', (int(self.var_search_bill_text.get()),))
                 inven_row = cur.fetchone()
-                cur.execute('SELECT * FROM bill WHERE pr_id=%s',(inven_row[0],))
-                rows_db=cur.fetchall()
-                if rows_db!=[]:
-                    self.bill_list_tree.delete(*self.bill_list_tree.get_children())
-                    for row in rows_db:
-                        cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
-                        cs_det_row = cur.fetchone()
-                        cur.execute('SELECT * FROM paymode WHERE id=%s',(row[6], )) 
-                        pay_det_row = cur.fetchone()
-                        self.bill_list_tree.insert('', END, values=(
-                            row[0],
-                            cs_det_row[1],
-                            row[2],
-                            inven_row[1],
-                            row[3],
-                            row[4],
-                            pay_det_row[1],
-                            inven_row[4],
-                            row[5],
-                            inven_row[4] * row[5]
-                            ))
+                if inven_row is not None:
+                    cur.execute('SELECT * FROM bill WHERE pr_id=%s',(inven_row[0],))
+                    rows_db=cur.fetchall()
+                    if rows_db!=[]:
+                        self.bill_list_tree.delete(*self.bill_list_tree.get_children())
+                        for row in rows_db:
+                            cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
+                            cs_det_row = cur.fetchone()
+                            cur.execute('SELECT * FROM paymode WHERE id=%s',(row[6], )) 
+                            pay_det_row = cur.fetchone()
+                            self.bill_list_tree.insert('', END, values=(
+                                row[0],
+                                cs_det_row[1],
+                                row[2],
+                                inven_row[1],
+                                row[3],
+                                row[4],
+                                pay_det_row[1],
+                                inven_row[4],
+                                row[5],
+                                inven_row[4] * row[5],
+                                row[7]
+                                ))
+                    else:
+                        messagebox.showinfo('No Matching Results', f'Nothing Matched With IMEI: {self.var_search_bill_text.get()}.', parent=self.window)
+                        self.show_bill_func()
                 else:
-                    messagebox.showinfo('No Matching Results', f'Nothing Matched With IMEI: {self.var_search_bill_text.get()}.', parent=self.window)
-                    self.show_bill_func()
+                    messagebox.showinfo('No Matching Results', f'Not a Valid Product Name: {self.var_search_bill_text.get()}.', parent=self.window)
+
             elif self.var_search_bill_by.get()=='Cus Name':
-                cur.execute('SELECT * FROM customer WHERE name=%s', (self.var_search_bill_text.get(),))
+                cur.execute('SELECT * FROM customer WHERE name=%s', (self.var_search_bill_text.get().capitalize(),))
                 cus_row = cur.fetchone()
-                cur.execute('SELECT * FROM bill WHERE cus_id=%s',(cus_row[0],))
-                rows_db=cur.fetchall()
-                if rows_db!=[]:
-                    self.bill_list_tree.delete(*self.bill_list_tree.get_children())
-                    for row in rows_db:
-                        cur.execute('SELECT * FROM inventory WHERE id=%s',(row[2], )) 
-                        pr_det_row = cur.fetchone()
-                        cur.execute('SELECT * FROM paymode WHERE id=%s',(row[6], )) 
-                        pay_det_row = cur.fetchone()
-                        self.bill_list_tree.insert('', END, values=(
-                            row[0],
-                            cus_row[1],
-                            row[2],
-                            pr_det_row[1],
-                            row[3],
-                            row[4],
-                            pay_det_row[1],
-                            pr_det_row[4],
-                            row[5],
-                            pr_det_row[4] * row[5]
-                            ))
+                if cus_row is not None:
+                    cur.execute('SELECT * FROM bill WHERE cus_id=%s',(cus_row[0],))
+                    rows_db=cur.fetchall()
+                    if rows_db!=[]:
+                        self.bill_list_tree.delete(*self.bill_list_tree.get_children())
+                        for row in rows_db:
+                            cur.execute('SELECT * FROM inventory WHERE id=%s',(row[2], )) 
+                            pr_det_row = cur.fetchone()
+                            cur.execute('SELECT * FROM paymode WHERE id=%s',(row[6], )) 
+                            pay_det_row = cur.fetchone()
+                            self.bill_list_tree.insert('', END, values=(
+                                row[0],
+                                cus_row[1],
+                                row[2],
+                                pr_det_row[1],
+                                row[3],
+                                row[4],
+                                pay_det_row[1],
+                                pr_det_row[4],
+                                row[5],
+                                pr_det_row[4] * row[5],
+                                row[7]
+                                ))
+                    else:
+                        messagebox.showinfo('No Matching Results', f'Nothing Matched in Bill With Customer Name: {self.var_search_bill_text.get().capitalize()}.', parent=self.window)
+                        self.show_bill_func()
                 else:
-                    messagebox.showinfo('No Matching Results', f'Nothing Matched With Customer Name: {self.var_search_bill_text.get()}.', parent=self.window)
-                    self.show_bill_func()
+                        messagebox.showinfo('No Matching Results', f'No Customer Name Exists: {self.var_search_bill_text.get().capitalize()}.', parent=self.window)
+
             elif self.var_search_bill_by.get()=='Purchase Mode':
-                cur.execute('SELECT * FROM paymode WHERE name=%s', (self.var_search_bill_text.get(),))
+                cur.execute('SELECT * FROM paymode WHERE name=%s', (self.var_search_bill_text.get().capitalize(),))
                 pur_row = cur.fetchone()
-                cur.execute('SELECT * FROM bill WHERE pur_mode=%s',(pur_row[0],))
-                rows_db=cur.fetchall()
-                if rows_db!=[]:
-                    self.bill_list_tree.delete(*self.bill_list_tree.get_children())
-                    for row in rows_db:
-                        cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
-                        cs_det_row = cur.fetchone()
-                        cur.execute('SELECT * FROM inventory WHERE id=%s',(row[2], )) 
-                        pr_det_row = cur.fetchone()
-                        cur.execute('SELECT * FROM paymode WHERE id=%s',(row[6], )) 
-                        pay_det_row = cur.fetchone()
-                        self.bill_list_tree.insert('', END, values=(
-                            row[0],
-                            cs_det_row[1],
-                            row[2],
-                            pr_det_row[1],
-                            row[3],
-                            row[4],
-                            pay_det_row[1],
-                            pr_det_row[4],
-                            row[5],
-                            pr_det_row[4] * row[5]
-                            ))
+                if pur_row is not None:
+                    cur.execute('SELECT * FROM bill WHERE pur_mode=%s',(pur_row[0],))
+                    rows_db=cur.fetchall()
+                    if rows_db!=[]:
+                        self.bill_list_tree.delete(*self.bill_list_tree.get_children())
+                        for row in rows_db:
+                            cur.execute('SELECT * FROM customer WHERE id=%s',(row[1], )) 
+                            cs_det_row = cur.fetchone()
+                            cur.execute('SELECT * FROM inventory WHERE id=%s',(row[2], )) 
+                            pr_det_row = cur.fetchone()
+                            cur.execute('SELECT * FROM paymode WHERE id=%s',(row[6], )) 
+                            pay_det_row = cur.fetchone()
+                            self.bill_list_tree.insert('', END, values=(
+                                row[0],
+                                cs_det_row[1],
+                                row[2],
+                                pr_det_row[1],
+                                row[3],
+                                row[4],
+                                pay_det_row[1],
+                                pr_det_row[4],
+                                row[5],
+                                pr_det_row[4] * row[5],
+                                row[7]
+                                ))
+                    else:
+                        messagebox.showinfo('No Matching Results', f'Nothing Matched With Purchase Mode: {self.var_search_bill_text.get().capitalize()}.', parent=self.window)
+                        self.show_bill_func()
                 else:
-                    messagebox.showinfo('No Matching Results', f'Nothing Matched With Customer Name: {self.var_search_bill_text.get()}.', parent=self.window)
-                    self.show_bill_func()
+                    messagebox.showinfo('No Matching Results', f'No such Purchase Mode Exists: {self.var_search_bill_text.get().capitalize()}.', parent=self.window)
+
         except Exception as ex:
             messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
 

@@ -2,16 +2,11 @@ from tkinter import *
 import tkinter.ttk as ttk
 from tkinter import messagebox
 import psycopg2
-
-DB_HOST = 'localhost'
-DB_NAME = 'mobiledb'
-DB_USER = 'postgres'
-DB_PASS = 'Anas@123Great'
+from constants import *
 
 class PayDash:
     def __init__(self, window):
         self.window = window
-        # self.username = username
         self.window.geometry("600x600+200+100")
         self.main_black_color = '#0f0f0f'
         self.main_white_color = '#f8f8f8'

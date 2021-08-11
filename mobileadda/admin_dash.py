@@ -7,11 +7,7 @@ from check_inv import CheckInvDash
 from cus_list import CusDash
 from pay_mode import PayDash
 from user_list import UserListDash
-
-DB_HOST = 'localhost'
-DB_NAME = 'mobiledb'
-DB_USER = 'postgres'
-DB_PASS = 'Anas@123Great'
+from constants import *
 
 class AdminDash:
     def __init__(self, window):

@@ -7,23 +7,18 @@ from cus_list import CusDash
 from pay_mode import PayDash
 from check_inv import CheckInvDash
 from all_bill_list import BillCheckDash
-from datetime import datetime
-
+from datetime import date, datetime
+from constants import *
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import Paragraph, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
-
-DB_HOST = 'localhost'
-DB_NAME = 'mobiledb'
-DB_USER = 'postgres'
-DB_PASS = 'Anas@123Great'
+from num2words import num2words
 
 class BillDash:
     def __init__(self, window):
         self.window = window
-        # self.username = username
         self.window.geometry("1366x720+70+50")
         self.main_black_color = '#0f0f0f'
         self.main_white_color = '#f8f8f8'
@@ -76,19 +71,19 @@ class BillDash:
                                 bg='white', font=('Roboto Regular', 14, "bold"),width=14)
         search_inv_btn.place(x=770, y=10)
 
-        # Customer Btn 
-        add_pr_btn = Button(self.window, text='Add Products',
-                                cursor='hand2',fg=self.main_black_color, 
-                                command=self.go_to_inventory_func,                  
-                                bg='white', font=('Roboto Regular', 14, "bold"),width=14)
-        add_pr_btn.place(x=970, y=10)
-        
         # Dashboard Btn 
         main_win_btn = Button(self.window, text='Dashboard',
                                 cursor='hand2',fg=self.main_black_color, 
                                 command=self.go_to_dashboard_func,                  
                                 bg='white', font=('Roboto Regular', 14, "bold"),width=14)
-        main_win_btn.place(x=1170, y=10)
+        main_win_btn.place(x=970, y=10)
+
+        # Refresh Btn 
+        refresh_btn = Button(self.window, text='Refresh',
+                                cursor='hand2',fg=self.main_black_color, 
+                                command=self.refresh_func,                  
+                                bg='white', font=('Roboto Regular', 14, "bold"),width=14)
+        refresh_btn.place(x=1170, y=10)
 
         # Product DETAILS FORM FRAME 
         self.prod_frame = LabelFrame(self.window,bd=2,text='Product Details', relief=FLAT)        
@@ -411,13 +406,13 @@ class BillDash:
         self.newWindow = Toplevel(self.window)
         self.app = PayDash(self.newWindow)
 
-    def go_to_inventory_func(self):
-        self.newWindow = Toplevel(self.window)
-        self.app = AllProdDash(self.newWindow)
-
     def go_to_bill_func(self):
         self.newWindow = Toplevel(self.window)
         self.app = BillCheckDash(self.newWindow)
+
+    def refresh_func(self):
+        self.show_all_prod_func()
+        self.add_pur_mode_combobox()
 
     def go_to_dashboard_func(self):
         self.window.destroy()
@@ -768,12 +763,15 @@ class BillDash:
                     bill_list = cur.fetchone()
                     cur.execute('SELECT * FROM inventory WHERE id=%s',(bill_list[2],))
                     prod = cur.fetchone()
-                    prd_list = [s_no, prod[1],prod[0],prod[4],bill_list[5],prod[4]*bill_list[5]]
+                    cgst_with_amount = f"{prod[5]}%: {(prod[4]*prod[5])/100}"
+                    sgst_with_amount = f"{prod[5]}%: {(prod[4]*prod[6])/100}"
+                    prd_list = [s_no, prod[1],prod[0],f"{prod[4]}",bill_list[5],cgst_with_amount,sgst_with_amount]
                     total_price+=prod[4]*bill_list[5]
                     all_prd_list.append(prd_list)
                     s_no+=1 
                 
                 total_price_int = int(total_price)
+                price_in_words = num2words(total_price_int)
                 current_date_without_bs = current_date.replace('/', '-')
                 file_name = f'bill_invoice/{self.var_cus_name.get()}_{total_price_int}_{current_date_without_bs}'
                 # Create and Insert into billdetails datails
@@ -802,15 +800,23 @@ class BillDash:
                 for bill_id in all_bill_id:
                     cur.execute("UPDATE bill SET inv_id=%s WHERE id=%s",(invoice_id, bill_id))
                     con.commit()
+                # Creating PDF File 
+                full_datetime = datetime.now()
+                today_date = full_datetime.strftime('%d')
+                this_month = full_datetime.strftime('%m')
+                this_year = full_datetime.strftime('%Y')
+                date_to_pass_in_pdf = f'{today_date}-{this_month}-{this_year}'
+
                 self.create_inv(
                     file_name,
-                    self.var_cus_name.get(),
+                    self.var_cus_name.get().capitalize(),
                     self.var_cus_num.get(), 
-                    self.var_cus_add.get(),
+                    self.var_cus_add.get().capitalize(),
                     invoice_id,
-                    current_date,
+                    date_to_pass_in_pdf,
                     all_prd_list,
-                    total_price
+                    total_price,
+                    price_in_words.capitalize()
                 )
                 messagebox.showinfo('Congratulations', f'Bill has been generated for {self.var_cus_name.get()}', parent=self.window)
                 self.clear_all_func()
@@ -818,7 +824,7 @@ class BillDash:
                 messagebox.showerror('Error', f'Error due to {str(ex)}', parent=self.window)
     
     # Creating PDF CODE 
-    def create_inv(self,file_name, cus_name, cus_num, cus_add,invoice_id,crnt_date, prd_list,total_price):
+    def create_inv(self,file_name, cus_name, cus_num, cus_add,invoice_id,crnt_date, prd_list,total_price,price_in_words):
         # Checking if the folder exists
         import os
         crnt_path = os.getcwd()
@@ -847,14 +853,14 @@ class BillDash:
                 Khagaul Road Phulwari Sharif<br/>
                 Patna, Bihar - 801505 <br/>
                 +91 8709203550 <br/>
-                +91 6208787326
+                +91 9504819561
             </font>
         """
         company_desc_style = styles["Normal"]
         company_desc_style.leading=16
         company_desc_para = Paragraph(company_desc,style=company_desc_style)
         company_desc_para.wrapOn(my_canvas, 350, 140)
-        company_desc_para.drawOn(my_canvas, 40,720)
+        company_desc_para.drawOn(my_canvas, 40,710)
 
         # Invoice Num
         inv_no_text = f'<font size=14>Invoice No: <b>{invoice_id}</b></font>'
@@ -871,10 +877,9 @@ class BillDash:
         crnt_date_para.drawOn(my_canvas, 430,770)
 
         # GSTIN 
-        gst_num = 'BR083434909'
+        gst_num = '10BPBPA0505D1Z9'
         comp_gst_num = f"""
-        <font size=14 textColor = Color(0,0,0,0.8)><b>GSTIN:</b> {gst_num}</font> <br/>
-        <font size=14 textColor = Color(0,0,0,0.8)><b>Company PAN:</b> {gst_num}</font>"""
+        <font size=14 textColor = Color(0,0,0,0.8)><b>GSTIN:</b> {gst_num}</font>"""
         comp_gst_num_style = styles["Normal"]
         comp_gst_para = Paragraph(comp_gst_num,style=comp_gst_num_style)
         comp_gst_para.wrapOn(my_canvas, 400,50)
@@ -894,14 +899,15 @@ class BillDash:
         customer_para.drawOn(my_canvas, 40,610)
 
         # Product Description 
-        colWidths = [50, 100, 150, 100, 50, 100]
+        colWidths = [40, 120, 100, 100, 50, 70, 70]
         b_data = [
                     self.create_bold_text('S.No'),
                     self.create_bold_text('Product Name'),
                     self.create_bold_text('IMEI'),
                     self.create_bold_text('Rate'),
                     self.create_bold_text('Qty'),
-                    self.create_bold_text('Amount'),
+                    self.create_bold_text('CGST'),
+                    self.create_bold_text('SGST'),
                 ]
         data = []
         data.append(b_data)
@@ -914,19 +920,19 @@ class BillDash:
 
         table = Table(data, colWidths=colWidths)
         table.setStyle(tblstyle)
-        table.wrapOn(my_canvas, 600, 400)
+        table.wrapOn(my_canvas, 620, 400)
         table.drawOn(my_canvas, 20, 400)
 
         # Total Price     
-        my_canvas.line(40,320,560,320)
-        total_price_text = f'<font size=16>Total Price: <b>{total_price}</b></font>'
+        my_canvas.line(20,300,570,300)
+        total_price_text = f'<font size=16>Total Price: {price_in_words}- <b>{total_price}</b></font>'
         total_price_style = styles["Normal"]
         total_price_para = Paragraph(total_price_text,style=total_price_style)
-        total_price_para.wrapOn(my_canvas, 300,30)
-        total_price_para.drawOn(my_canvas, 300,300)
-        my_canvas.line(40,290,560,290)
+        total_price_para.wrapOn(my_canvas, 560,30)
+        total_price_para.drawOn(my_canvas, 60,280)
+        my_canvas.line(20,270,570,270)
 
-        # Signature 
+        # Signature
         signature_text = f'<font size=12>Authorised Signature:</font>'
         signature_style = styles["Normal"]
         signature_para = Paragraph(signature_text,style=signature_style)
@@ -934,19 +940,18 @@ class BillDash:
         signature_para.drawOn(my_canvas, 400,190)
         my_canvas.rect(400,150,160,40,stroke=1,fill=0)
 
-        # Disclaimer 
-        disclaimer_desc = """
-            <font size=14 textColor = Color(0,0,0,0.8)><b>Disclaimer:</b></font><br/>
-            <font size=12 textColor = Color(0,0,0,0.6)>
-            We declare that this invoice shows the actual price of the goods
-            described and that all the particulars are true and correct.
-            </font>
+        # Note
+        note = """
+            <font size=14 textColor = Color(0,0,0,0.8)><b>NOTE:</b></font><br/>
+            <font size=12 textColor = Color(0,0,0,0.6)>Goods once sold will not be taken back.</font><br/>
+            <font size=12 textColor = Color(0,0,0,0.6)>All dispute subject to Patna Jurisdiction only.</font><br/>
+            <font size=12 textColor = Color(0,0,0,0.6)>After sales, services will be provided only by related Authorised Service Center .</font>
         """
-        disclaimer_desc_style = styles["Normal"]
-        disclaimer_desc_style.leading=16
-        disclaimer_desc_para = Paragraph(disclaimer_desc,style=disclaimer_desc_style)
-        disclaimer_desc_para.wrapOn(my_canvas, 400, 140)
-        disclaimer_desc_para.drawOn(my_canvas, 40,25)
+        note_desc_style = styles["Normal"]
+        note_desc_style.leading=16
+        note_desc_para = Paragraph(note,style=note_desc_style)
+        note_desc_para.wrapOn(my_canvas, 500, 200)
+        note_desc_para.drawOn(my_canvas, 40,25)
 
         my_canvas.showPage()
         my_canvas.save()

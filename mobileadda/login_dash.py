@@ -1,14 +1,9 @@
 from tkinter import *
-# from tkinter.ttk import *
 from PIL import Image, ImageTk
 from tkinter import messagebox
 from admin_dash import AdminDash
 import psycopg2
-
-DB_HOST = 'localhost'
-DB_NAME = 'mobiledb'
-DB_USER = 'postgres'
-DB_PASS = 'Anas@123Great'
+from constants import *
 
 class LoginDash:
     def __init__(self, window):

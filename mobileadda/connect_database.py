@@ -1,21 +1,9 @@
 import psycopg2
-
-DB_HOST = 'localhost'
-DB_NAME = 'mobiledb'
-DB_USER = 'postgres'
-DB_PASS = 'Anas@123Great'
-
-# DB_HOST = '206.189.140.222'
-# DB_NAME = 'billingsoftwaredb'
-# DB_USER = 'billinguser'
-# DB_PASS = 'Mdbillingpassword@123'
+from constants import *
 
 def create_db():
     conn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASS)
-    cur = conn.cursor()
-    
-    # cur.execute('DROP TABLE bill')
-    # cur.execute('DROP TABLE billdetails')
+    cur = conn.cursor()    
     cur.execute("""CREATE TABLE IF NOT EXISTS users(
         id SERIAL PRIMARY KEY,
         username varchar(100) NOT NULL UNIQUE,

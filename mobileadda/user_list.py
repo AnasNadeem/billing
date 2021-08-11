@@ -3,11 +3,7 @@ import tkinter.ttk as ttk
 # from PIL import Image, ImageTk
 from tkinter import messagebox
 import psycopg2
-
-DB_HOST = 'localhost'
-DB_NAME = 'mobiledb'
-DB_USER = 'postgres'
-DB_PASS = 'Anas@123Great'
+from constants import *
 
 class UserListDash:
     def __init__(self, window):
